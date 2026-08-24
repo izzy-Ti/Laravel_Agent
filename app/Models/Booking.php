@@ -2,27 +2,41 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-
-return new class extends Migration
+class Booking extends Model
 {
-    public function up(): void
+    use HasFactory;
+
+    protected $fillable = [
+        'customer_name',
+        'customer_email',
+        'room_type',
+        'date',
+        'price',
+        'status',
+        'special_requests',
+    ];
+
+    protected $casts = [
+        'date' => 'date:Y-m-d',
+        'price' => 'decimal:2',
+    ];
+
+    /**
+     * Scope to only include active/confirmed bookings.
+     */
+    public function scopeConfirmed($query)
     {
-        Schema::create('bookings', function (Blueprint $table) {
-            $table->id();
-            $table->string('customer_email');
-            $table->date('date');
-            $table->string('room_type');
-            $table->timestamps();
-        });
+        return $query->where('status', 'confirmed');
     }
 
-    public function down(): void
+    /**
+     * Scope to check room type.
+     */
+    public function scopeForRoomType($query, string $roomType)
     {
-        Schema::dropIfExists('bookings');
+        return $query->where('room_type', strtolower($roomType));
     }
-};
+}

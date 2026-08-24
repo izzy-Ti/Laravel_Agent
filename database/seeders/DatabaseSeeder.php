@@ -2,24 +2,42 @@
 
 namespace Database\Seeders;
 
+use App\Models\Booking;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::firstOrCreate(
+            ['email' => 'agent@example.com'],
+            ['name' => 'Agent Master', 'password' => bcrypt('secret123')]
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        Booking::firstOrCreate(
+            ['customer_email' => 'alice@example.com', 'date' => '2026-09-01'],
+            [
+                'customer_name' => 'Alice Johnson',
+                'room_type' => 'deluxe',
+                'price' => 150.00,
+                'status' => 'confirmed',
+                'special_requests' => 'High floor, extra pillows'
+            ]
+        );
+
+        Booking::firstOrCreate(
+            ['customer_email' => 'bob@example.com', 'date' => '2026-09-05'],
+            [
+                'customer_name' => 'Bob Smith',
+                'room_type' => 'suite',
+                'price' => 250.00,
+                'status' => 'confirmed',
+                'special_requests' => 'Late check-in at 8 PM'
+            ]
+        );
     }
 }
