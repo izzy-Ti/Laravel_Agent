@@ -60,6 +60,12 @@ echo "5. Testing getToolsSchema...\n";
 $res5 = $controller->getToolsSchema();
 echo "Result (Status " . $res5->getStatusCode() . "): " . $res5->getContent() . "\n\n";
 
+// 5b. Copilot OpenAPI 3.0
+echo "5b. Testing openapi.json endpoint...\n";
+$reqOpenApi = Request::create('/openapi.json', 'GET');
+$resOpenApi = $app->handle($reqOpenApi);
+echo "Result (Status " . $resOpenApi->getStatusCode() . "): OpenAPI Title: " . (json_decode($resOpenApi->getContent(), true)['info']['title'] ?? 'N/A') . "\n\n";
+
 // 6. Unified Dispatcher
 echo "6. Testing executeTool Dispatcher...\n";
 $req6 = Request::create('/api/agent/execute', 'POST', [

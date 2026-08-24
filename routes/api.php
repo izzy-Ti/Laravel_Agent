@@ -36,3 +36,16 @@ Route::post('/agent/chat', [AgentToolController::class, 'simulateAgentChat']);
 
 // Dashboard Helper: Live Bookings Database Inspector
 Route::get('/agent/live-bookings', [AgentToolController::class, 'listAllBookings']);
+
+// Copilot / OpenAPI 3.0 Specification
+Route::get('/openapi.json', function () {
+    $path = public_path('openapi.json');
+    if (!file_exists($path)) {
+        abort(404, 'openapi.json not found');
+    }
+    $content = json_decode(file_get_contents($path), true);
+    $content['servers'] = [
+        ['url' => url('/'), 'description' => 'Current Environment Server']
+    ];
+    return response()->json($content);
+});

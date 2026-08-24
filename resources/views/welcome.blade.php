@@ -707,7 +707,7 @@
     </div>
 
     <footer class="footer">
-        Built for <strong>AI Agent Development</strong> in Laravel • Endpoints: <a href="/api/agent/tools" target="_blank">/api/agent/tools</a> • <a href="/api/agent/live-bookings" target="_blank">/api/agent/live-bookings</a>
+        Built for <strong>AI Agent Development</strong> in Laravel • <a href="/openapi.json" target="_blank">📋 openapi.json (Copilot Agent)</a> • <a href="/api/agent/tools" target="_blank">⚡ /api/agent/tools</a> • <a href="/api/agent/live-bookings" target="_blank">🗄️ /api/agent/live-bookings</a>
     </footer>
 
 </div>

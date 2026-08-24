@@ -1,0 +1,322 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Hotel Concierge AI Agent API",
+    "description": "OpenAPI specification for Microsoft Copilot, GitHub Copilot Extensions, Custom GPTs, and autonomous agent frameworks to interact with hotel booking tools.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "AI Agent Developer Team",
+      "email": "support@example.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/agent/check-availability": {
+      "post": {
+        "summary": "Check Room Availability",
+        "description": "Inspects room inventory, capacity, amenities, and dynamic nightly rates for a given date and optional room category.",
+        "operationId": "checkAvailability",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["date"],
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2026-09-01",
+                    "description": "The reservation date in YYYY-MM-DD format."
+                  },
+                  "room_type": {
+                    "type": "string",
+                    "enum": ["standard", "deluxe", "suite", "penthouse"],
+                    "example": "deluxe",
+                    "description": "Optional specific room category to check."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Availability details successfully retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": { "type": "string", "example": "check_availability" },
+                    "success": { "type": "boolean", "example": true },
+                    "date": { "type": "string", "example": "2026-09-01" },
+                    "room_type": { "type": "string", "example": "deluxe" },
+                    "available": { "type": "boolean", "example": true },
+                    "details": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string", "example": "Deluxe King Room" },
+                        "price": { "type": "number", "example": 150.0 },
+                        "capacity": { "type": "integer", "example": 2 },
+                        "amenities": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": ["King Bed", "City View", "Free Wi-Fi"]
+                        }
+                      }
+                    },
+                    "message": { "type": "string", "example": "Deluxe King Room is available on 2026-09-01 at $150/night." }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agent/create-booking": {
+      "post": {
+        "summary": "Create Room Reservation",
+        "description": "Reserves a room for a guest on a specific date, performs double-booking validation, and issues a confirmation code.",
+        "operationId": "createBooking",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["customer_name", "customer_email", "room_type", "date"],
+                "properties": {
+                  "customer_name": {
+                    "type": "string",
+                    "example": "Sophia Taylor",
+                    "description": "Full name of the guest."
+                  },
+                  "customer_email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "sophia@example.com",
+                    "description": "Email address of the guest."
+                  },
+                  "room_type": {
+                    "type": "string",
+                    "enum": ["standard", "deluxe", "suite", "penthouse"],
+                    "example": "suite",
+                    "description": "Chosen room category."
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2026-10-15",
+                    "description": "Reservation date in YYYY-MM-DD format."
+                  },
+                  "special_requests": {
+                    "type": "string",
+                    "example": "High floor, quiet corner",
+                    "description": "Optional preferences or notes."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Reservation successfully confirmed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": { "type": "string", "example": "create_booking" },
+                    "success": { "type": "boolean", "example": true },
+                    "booking_id": { "type": "integer", "example": 7 },
+                    "confirmation_code": { "type": "string", "example": "RES-00007" },
+                    "message": { "type": "string", "example": "Reservation #7 confirmed for Sophia Taylor on 2026-10-15." }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Booking conflict (room already booked)"
+          }
+        }
+      }
+    },
+    "/api/agent/get-booking-details": {
+      "post": {
+        "summary": "Lookup Booking Details",
+        "description": "Retrieves active or past reservation records by numeric Booking ID or customer email.",
+        "operationId": "getBookingDetails",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "booking_id": {
+                    "type": "integer",
+                    "example": 1,
+                    "description": "The unique booking ID."
+                  },
+                  "customer_email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "alice@example.com",
+                    "description": "Email address associated with the booking."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking records found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": { "type": "string", "example": "get_booking_details" },
+                    "success": { "type": "boolean", "example": true },
+                    "found": { "type": "boolean", "example": true },
+                    "count": { "type": "integer", "example": 1 },
+                    "bookings": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "integer", "example": 1 },
+                          "customer_name": { "type": "string", "example": "Alice Johnson" },
+                          "customer_email": { "type": "string", "example": "alice@example.com" },
+                          "room_type": { "type": "string", "example": "deluxe" },
+                          "date": { "type": "string", "example": "2026-09-01" },
+                          "price": { "type": "string", "example": "150.00" },
+                          "status": { "type": "string", "example": "confirmed" },
+                          "special_requests": { "type": "string", "example": "High floor" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No reservations found"
+          }
+        }
+      }
+    },
+    "/api/agent/cancel-booking": {
+      "post": {
+        "summary": "Cancel Booking",
+        "description": "Cancels an active reservation, updates status to cancelled, and initiates refund processing.",
+        "operationId": "cancelBooking",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["booking_id"],
+                "properties": {
+                  "booking_id": {
+                    "type": "integer",
+                    "example": 1,
+                    "description": "The ID of the booking to cancel."
+                  },
+                  "reason": {
+                    "type": "string",
+                    "example": "Change of travel plans",
+                    "description": "Optional cancellation reason."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking successfully cancelled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tool": { "type": "string", "example": "cancel_booking" },
+                    "success": { "type": "boolean", "example": true },
+                    "booking_id": { "type": "integer", "example": 1 },
+                    "status": { "type": "string", "example": "cancelled" },
+                    "refund_status": { "type": "string", "example": "Full refund of $150.00 initiated." },
+                    "message": { "type": "string", "example": "Booking #1 was successfully cancelled." }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Booking not found"
+          }
+        }
+      }
+    },
+    "/api/agent/tools": {
+      "get": {
+        "summary": "Get Tool Schema Catalog",
+        "description": "Returns raw OpenAI/Gemini/Anthropic compatible JSON schema function definitions.",
+        "operationId": "getToolsSchema",
+        "responses": {
+          "200": {
+            "description": "Tool schema catalog"
+          }
+        }
+      }
+    },
+    "/api/agent/execute": {
+      "post": {
+        "summary": "Universal Tool Dispatcher",
+        "description": "Executes any registered agent tool dynamically by name with provided arguments.",
+        "operationId": "executeTool",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["tool"],
+                "properties": {
+                  "tool": {
+                    "type": "string",
+                    "example": "check_availability",
+                    "description": "Name of the tool to execute."
+                  },
+                  "arguments": {
+                    "type": "object",
+                    "example": { "date": "2026-09-01", "room_type": "deluxe" },
+                    "description": "Arguments dictionary matching tool definition."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tool executed successfully"
+          }
+        }
+      }
+    }
+  }
+}
