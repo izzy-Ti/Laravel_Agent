@@ -1,58 +1,101 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🤖 Laravel AI Agent Development Suite & Toolset
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A reference architecture and learning playground for building **AI Agents** with **Laravel**.
 
-## About Laravel
+This project demonstrates how Autonomous AI Agents (using OpenAI Function Calling, Anthropic Tools, Gemini, LangChain, AutoGPT, or custom agent loops) connect to Laravel backend APIs to perform deterministic database operations and business logic.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🛠️ The 4 Core Agent Tools
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| # | Tool Name | Endpoint | Method | Purpose |
+|---|-----------|----------|--------|---------|
+| 1 | `check_availability` | `/api/agent/check-availability` | `POST` | Check room availability, capacity, amenities, and dynamic nightly pricing for any date. |
+| 2 | `create_booking` | `/api/agent/create-booking` | `POST` | Create a confirmed reservation with conflict checking and confirmation codes (`RES-XXXXX`). |
+| 3 | `get_booking_details` | `/api/agent/get-booking-details` | `POST` / `GET` | Search and retrieve reservation details by `booking_id` or `customer_email`. |
+| 4 | `cancel_booking` | `/api/agent/cancel-booking` | `POST` | Cancel an existing reservation, update lifecycle status, and initiate automated refund. |
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🚀 Key Agent Development Features
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 1. 📜 OpenAI-Compatible Tool Schema Catalog
+- **Endpoint**: `GET /api/agent/tools`
+- Returns full JSON Schema definitions of all 4 tools with parameter descriptions, types, enums, and required fields ready to be plugged into OpenAI API (`tools` parameter) or any agent framework.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+### 2. ⚡ Universal Tool Dispatcher
+- **Endpoint**: `POST /api/agent/execute`
+- Allows any AI agent to dispatch tool execution requests uniformly:
+```json
+{
+  "tool": "check_availability",
+  "arguments": {
+    "date": "2026-09-01",
+    "room_type": "deluxe"
+  }
+}
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 3. 🧠 Agent Chat & Reasoning Simulator
+- **Endpoint**: `POST /api/agent/chat`
+- Demonstrates an agent reasoning loop:
+  1. Receives natural language user prompt.
+  2. Extracts entities (dates, room types, emails, booking IDs).
+  3. Formulates reasoning `thought`.
+  4. Selects and calls the correct tool.
+  5. Synthesizes a natural language response based on raw tool output.
 
-## Contributing
+### 4. 🖥️ Interactive Developer Playground
+- Open `/` in your browser to access the visual developer playground:
+  - Talk to the simulated AI concierge.
+  - Test each tool individually with sample inputs.
+  - Copy tool JSON schemas with 1 click.
+  - Live inspector viewing SQLite database records updated in real time.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 🏃 Getting Started
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 1. Database Setup & Seed
+```bash
+php artisan migrate:fresh --seed
+```
 
-## Security Vulnerabilities
+### 2. Run the Development Server
+```bash
+php artisan serve
+```
+Then visit `http://localhost:8000` to interact with the learning playground.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 3. Run Automated Tests
+```bash
+php tests/scratch_test.php
+```
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 📖 How AI Agents Use These Tools
+
+When using OpenAI's chat completions API with Tools:
+
+```php
+$tools = Http::get('http://localhost:8000/api/agent/tools')->json()['tools'];
+
+$response = $openai->chat()->create([
+    'model' => 'gpt-4o',
+    'messages' => [
+        ['role' => 'system', 'content' => 'You are a helpful hotel booking concierge.'],
+        ['role' => 'user', 'content' => 'Book a deluxe room on 2026-09-15 for Alex Rivera (alex@example.com)']
+    ],
+    'tools' => $tools,
+]);
+
+// When the model returns a tool_call:
+$toolCall = $response->choices[0]->message->toolCalls[0];
+
+// Execute tool in Laravel:
+$toolOutput = Http::post('http://localhost:8000/api/agent/execute', [
+    'tool' => $toolCall->function->name,
+    'arguments' => json_decode($toolCall->function->arguments, true),
+]);
+```
