@@ -519,4 +519,17 @@ class AgentToolController extends Controller
             'agent_response' => $agentReply
         ]);
     }
+
+    /**
+     * Helper: List all bookings for dashboard inspector
+     */
+    public function listAllBookings()
+    {
+        $bookings = Booking::orderByDesc('id')->get();
+        return response()->json([
+            'success' => true,
+            'count' => $bookings->count(),
+            'bookings' => $bookings
+        ]);
+    }
 }

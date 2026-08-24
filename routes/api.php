@@ -33,3 +33,6 @@ Route::post('/agent/execute', [AgentToolController::class, 'executeTool']);
 
 // Agent Reasoning & Chat Simulator
 Route::post('/agent/chat', [AgentToolController::class, 'simulateAgentChat']);
+
+// Dashboard Helper: Live Bookings Database Inspector
+Route::get('/agent/live-bookings', [AgentToolController::class, 'listAllBookings']);
