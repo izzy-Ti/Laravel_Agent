@@ -25,6 +25,21 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
+# 1. Add postgresql-dev to apk add
+RUN apk add --no-cache \
+    nginx \
+    curl \
+    libpng-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    sqlite-dev \
+    postgresql-dev \
+    oniguruma-dev
+
+# 2. Add pdo_pgsql and pgsql to docker-php-ext-install
+RUN docker-php-ext-install pdo pdo_sqlite pdo_pgsql pgsql mbstring bcmath
+
 # Set file permissions for Laravel storage & bootstrap/cache
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
