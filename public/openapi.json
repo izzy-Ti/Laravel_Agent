@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Logistics CEO Agent - Enterprise Source of Truth API",
+    "title": "Logistics CEO Agent - Copilot & Executive AI Tools API",
     "version": "2.0.0",
-    "description": "The definitive operational source of truth and autonomous AI tool-calling REST API for the Logistics Chief Executive Officer (CEO) Agent. Powers all 10 core logistics entities (Users, Companies, Drivers, Vehicles, Orders, Shipments, Deliveries, Routes, Warehouses, Customers) with executive telemetry and tool actions."
+    "description": "Executive intelligence, operational telemetry, and controlled business actions for the Logistics CEO Copilot Agent. Backed by the multi-tenant PostgreSQL operational source of truth."
   },
   "servers": [
     {
@@ -12,235 +12,43 @@
     },
     {
       "url": "/",
-      "description": "Current Host Server"
+      "description": "Production Server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
     }
   ],
   "tags": [
-    { "name": "Agent Tools", "description": "Executive Analytics, AI Tool Dispatcher & Operational Telematics" },
-    { "name": "Companies", "description": "Enterprise Freight Organizations & Tenants" },
-    { "name": "Users", "description": "Logistics Personnel, Dispatchers & System Users" },
-    { "name": "Customers", "description": "B2B Commercial Accounts, Credit Facilities & Billing" },
-    { "name": "Warehouses", "description": "Regional Distribution Superhubs, Cross-Docks & Cold Storage" },
-    { "name": "Drivers", "description": "CDL-A Certified Drivers, Safety Scores & Live GPS" },
-    { "name": "Vehicles", "description": "Commercial Fleet Trucks, Reefers, EVs & Maintenance" },
-    { "name": "Orders", "description": "Commercial Freight Purchase Orders & Manifests" },
-    { "name": "Routes", "description": "Interstate Corridors, Tolls, Waypoints & Risk Profiles" },
-    { "name": "Shipments", "description": "Line-Haul Freight Consignments, Tracking & NIST Temp Logs" },
-    { "name": "Deliveries", "description": "Final-Mile Fulfillment, Proof-of-Delivery (POD) & Ratings" }
+    {
+      "name": "EXECUTIVE_INTELLIGENCE",
+      "description": "High-level CEO briefings, KPI summaries, and automated risk/exception sweeps."
+    },
+    {
+      "name": "READ_LOGISTICS_DATA",
+      "description": "Real-time queries for fleet telematics, consignment tracking, warehouse capacity, financials, shipments, and drivers."
+    },
+    {
+      "name": "ACTION_LOGISTICS_DATA",
+      "description": "Narrow, auditable, and safe business actions: dispatch allocation, status updates, and cancellations."
+    }
   ],
   "paths": {
-    "/api/agent/ceo-kpis": {
+    "/api/agent/kpis": {
       "get": {
-        "tags": ["Agent Tools"],
+        "tags": ["EXECUTIVE_INTELLIGENCE"],
         "summary": "Get Executive CEO High-Level KPI Summary",
-        "description": "Returns executive financial and operational telemetry: gross revenue, total orders, active shipments, on-time delivery rate (OTD %), fleet utilization %, warehouse capacity %, and driver safety scores.",
+        "description": "Retrieve high-level executive financial and operational metrics: gross revenue, order pipeline count, active line-haul shipments, on-time delivery rate (OTD %), fleet utilization %, driver safety score, and warehouse capacity utilization.",
         "operationId": "getExecutiveKpis",
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "query",
-            "required": false,
-            "description": "Company ID to filter metrics (defaults to 1)",
-            "schema": { "type": "integer", "default": 1 }
-          }
-        ],
         "responses": {
           "200": {
             "description": "Executive KPI overview retrieved successfully",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ExecutiveKpisResponse" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/agent/fleet-status": {
-      "get": {
-        "tags": ["Agent Tools"],
-        "summary": "Query Fleet Status and Telematics (GET)",
-        "description": "Retrieve real-time GPS telemetry, operational status, fuel levels, and driver assignments across the fleet.",
-        "operationId": "queryFleetStatusGet",
-        "parameters": [
-          {
-            "name": "status",
-            "in": "query",
-            "required": false,
-            "description": "Filter by operational status",
-            "schema": { "type": "string", "enum": ["active", "in_transit", "idle", "maintenance"] }
-          },
-          {
-            "name": "low_fuel_only",
-            "in": "query",
-            "required": false,
-            "description": "Filter for trucks with fuel under 25%",
-            "schema": { "type": "boolean", "default": false }
-          },
-          {
-            "name": "company_id",
-            "in": "query",
-            "required": false,
-            "schema": { "type": "integer", "default": 1 }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Fleet status results",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/FleetStatusResponse" }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["Agent Tools"],
-        "summary": "Query Fleet Status and Telematics (POST)",
-        "description": "Structured POST version for AI agent tool invocation.",
-        "operationId": "queryFleetStatusPost",
-        "requestBody": {
-          "required": false,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "status": { "type": "string", "enum": ["active", "in_transit", "idle", "maintenance"] },
-                  "low_fuel_only": { "type": "boolean", "default": false },
-                  "company_id": { "type": "integer", "default": 1 }
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutiveKpisResponse"
                 }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Fleet status results",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/FleetStatusResponse" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/agent/track": {
-      "get": {
-        "tags": ["Agent Tools"],
-        "summary": "Track Shipment, Order, or Final-Mile Delivery (GET)",
-        "description": "Universal consignment tracker across tracking numbers, shipment codes, order numbers, or delivery numbers.",
-        "operationId": "trackConsignmentGet",
-        "parameters": [
-          {
-            "name": "query_code",
-            "in": "query",
-            "required": true,
-            "description": "Tracking code, shipment number, delivery number, or order number (e.g. TRK-1000-9999-01, ORD-2026-01001)",
-            "schema": { "type": "string", "example": "TRK-1000-9999-01" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Consignment details and telematics timeline",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/TrackingResponse" }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["Agent Tools"],
-        "summary": "Track Shipment, Order, or Final-Mile Delivery (POST)",
-        "description": "Structured POST version for AI agent tool invocation.",
-        "operationId": "trackConsignmentPost",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "query_code": { "type": "string", "example": "TRK-1000-9999-01", "description": "Identifier to look up" }
-                },
-                "required": ["query_code"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Consignment details",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/TrackingResponse" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/agent/warehouse-capacity": {
-      "get": {
-        "tags": ["Agent Tools"],
-        "summary": "Inspect Warehouse Capacity & Bottlenecks (GET)",
-        "description": "Inspect square footage utilization across regional superhubs and flag capacity bottlenecks.",
-        "operationId": "inspectWarehouseCapacityGet",
-        "parameters": [
-          {
-            "name": "threshold_pct",
-            "in": "query",
-            "required": false,
-            "description": "Utilization threshold to flag bottlenecks (default: 80)",
-            "schema": { "type": "number", "default": 80 }
-          },
-          {
-            "name": "company_id",
-            "in": "query",
-            "required": false,
-            "schema": { "type": "integer", "default": 1 }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Warehouse capacity audit",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/WarehouseCapacityResponse" }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["Agent Tools"],
-        "summary": "Inspect Warehouse Capacity & Bottlenecks (POST)",
-        "description": "Structured POST version for AI agent tool invocation.",
-        "operationId": "inspectWarehouseCapacityPost",
-        "requestBody": {
-          "required": false,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "threshold_pct": { "type": "number", "default": 80 },
-                  "company_id": { "type": "integer", "default": 1 }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Warehouse capacity audit",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/WarehouseCapacityResponse" }
               }
             }
           }
@@ -249,52 +57,126 @@
     },
     "/api/agent/critical-exceptions": {
       "get": {
-        "tags": ["Agent Tools"],
-        "summary": "Flag Critical Operational Exceptions & Risk Alerts (GET)",
-        "description": "Audit delayed freight shipments, vehicle breakdowns/low fuel, high-risk weather corridors, and high-exposure overdue accounts.",
-        "operationId": "flagCriticalExceptionsGet",
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "query",
-            "required": false,
-            "schema": { "type": "integer", "default": 1 }
-          }
-        ],
+        "tags": ["EXECUTIVE_INTELLIGENCE"],
+        "summary": "Scan Operational Exceptions & Risk Alerts",
+        "description": "Scan entire logistics operations for critical risks: delayed line-haul shipments, vehicles in maintenance or below 15% fuel, high-risk weather corridors, and customer accounts exceeding credit exposure limits.",
+        "operationId": "getCriticalExceptions",
         "responses": {
           "200": {
-            "description": "Operational exceptions list",
+            "description": "Active operational exceptions and risk sweep",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/CriticalExceptionsResponse" }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["Agent Tools"],
-        "summary": "Flag Critical Operational Exceptions & Risk Alerts (POST)",
-        "operationId": "flagCriticalExceptionsPost",
-        "requestBody": {
-          "required": false,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "company_id": { "type": "integer", "default": 1 }
+                "schema": {
+                  "$ref": "#/components/schemas/CriticalExceptionsResponse"
                 }
               }
             }
           }
-        },
+        }
+      }
+    },
+    "/api/agent/fleet-status": {
+      "get": {
+        "tags": ["READ_LOGISTICS_DATA"],
+        "summary": "Get Fleet Status & Telematics",
+        "description": "Query real-time commercial vehicle telematics, operational status (in_transit, active, idle, maintenance), low fuel alerts, and assigned CDL-A drivers.",
+        "operationId": "getFleetStatus",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Filter by operational status",
+            "schema": {
+              "type": "string",
+              "enum": ["active", "in_transit", "idle", "maintenance"]
+            }
+          },
+          {
+            "name": "low_fuel_only",
+            "in": "query",
+            "required": false,
+            "description": "Filter for trucks with fuel below 25%",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Operational exceptions list",
+            "description": "Fleet status and live telematics",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/CriticalExceptionsResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/FleetStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agent/track": {
+      "get": {
+        "tags": ["READ_LOGISTICS_DATA"],
+        "summary": "Track Consignment, Order, or Delivery",
+        "description": "Track any consignment across the freight network using tracking number, shipment code, order number, or final-mile delivery number.",
+        "operationId": "trackConsignment",
+        "parameters": [
+          {
+            "name": "query_code",
+            "in": "query",
+            "required": true,
+            "description": "Identifier to look up (e.g. TRK-1000-9999-01, SHP-260001, ORD-2026-01001, or DEL-2026-8801)",
+            "schema": {
+              "type": "string",
+              "example": "TRK-1000-9999-01"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Consignment details, route, and timeline events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrackingResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Consignment not found"
+          }
+        }
+      }
+    },
+    "/api/agent/warehouse-capacity": {
+      "get": {
+        "tags": ["READ_LOGISTICS_DATA"],
+        "summary": "Get Warehouse Utilization & Bottlenecks",
+        "description": "Inspect square footage utilization across regional distribution superhubs and flag capacity bottlenecks.",
+        "operationId": "getWarehouseCapacity",
+        "parameters": [
+          {
+            "name": "threshold_pct",
+            "in": "query",
+            "required": false,
+            "description": "Utilization threshold to flag bottlenecks (default: 80)",
+            "schema": {
+              "type": "number",
+              "default": 80
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Warehouse capacity audit and identified bottleneck hubs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WarehouseCapacityResponse"
+                }
               }
             }
           }
@@ -303,72 +185,203 @@
     },
     "/api/agent/customer-financials": {
       "get": {
-        "tags": ["Agent Tools"],
-        "summary": "Get Customer Financial Risk & Receivables (GET)",
-        "description": "Analyze credit limits, outstanding balances, payment terms, and financial risk profiles.",
-        "operationId": "getCustomerFinancialsGet",
+        "tags": ["READ_LOGISTICS_DATA"],
+        "summary": "Get Customer Financials & Receivables",
+        "description": "Analyze commercial customer credit limits, outstanding receivable balances, payment terms, and credit facility utilization.",
+        "operationId": "getCustomerFinancials",
         "parameters": [
           {
             "name": "customer_id",
             "in": "query",
             "required": false,
             "description": "Optional specific Customer ID",
-            "schema": { "type": "integer" }
-          },
-          {
-            "name": "company_id",
-            "in": "query",
-            "required": false,
-            "schema": { "type": "integer", "default": 1 }
+            "schema": {
+              "type": "integer"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Customer receivables analysis",
+            "description": "Customer receivables analysis and financial exposure",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/CustomerFinancialsResponse" }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["Agent Tools"],
-        "summary": "Get Customer Financial Risk & Receivables (POST)",
-        "operationId": "getCustomerFinancialsPost",
-        "requestBody": {
-          "required": false,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "customer_id": { "type": "integer" },
-                  "company_id": { "type": "integer", "default": 1 }
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerFinancialsResponse"
                 }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Customer receivables analysis",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/CustomerFinancialsResponse" }
               }
             }
           }
         }
       }
     },
-    "/api/agent/optimize-dispatch": {
+    "/api/agent/shipments": {
+      "get": {
+        "tags": ["READ_LOGISTICS_DATA"],
+        "summary": "List Active Line-Haul Shipments",
+        "description": "List line-haul freight shipments with origin/destination hubs, carrier type, temperature controls, and departure/arrival timestamps.",
+        "operationId": "getShipments",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Filter by shipment status",
+            "schema": {
+              "type": "string",
+              "enum": ["manifested", "picked_up", "in_transit", "out_for_delivery", "delivered", "delayed", "cancelled"]
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of shipments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agent/deliveries": {
+      "get": {
+        "tags": ["READ_LOGISTICS_DATA"],
+        "summary": "List Final-Mile Fulfillment Deliveries",
+        "description": "List final-mile delivery dispatches, assigned drivers, recipient receiving docks, and proof-of-delivery (POD) status.",
+        "operationId": "getDeliveries",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Filter by delivery status",
+            "schema": {
+              "type": "string",
+              "enum": ["pending", "dispatched", "en_route", "arrived", "completed", "failed"]
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of deliveries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agent/drivers": {
+      "get": {
+        "tags": ["READ_LOGISTICS_DATA"],
+        "summary": "List Commercial Drivers",
+        "description": "List CDL-A commercial drivers with safety score, rating, license details, status, and total completed trips.",
+        "operationId": "getDrivers",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["available", "on_trip", "off_duty", "suspended"]
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of drivers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agent/vehicles": {
+      "get": {
+        "tags": ["READ_LOGISTICS_DATA"],
+        "summary": "List Fleet Assets & Trucks",
+        "description": "List commercial trucks, reefers, and electric vans with fuel levels, odometer km, payload capacity, and maintenance schedules.",
+        "operationId": "getVehicles",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["active", "in_transit", "maintenance", "idle"]
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of vehicles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agent/dispatch": {
       "post": {
-        "tags": ["Agent Tools"],
-        "summary": "Optimize or Assign Dispatch for Active Shipment",
-        "description": "Autonomously match and assign the optimal available CDL-A driver and vehicle asset to an active freight shipment.",
-        "operationId": "optimizeOrAssignDispatch",
+        "tags": ["ACTION_LOGISTICS_DATA"],
+        "summary": "Assign Driver & Vehicle to Shipment Dispatch",
+        "description": "Assign a driver and vehicle to a shipment. If driver_id or vehicle_id is omitted, the system selects suitable available resources.",
+        "operationId": "assignShipmentDispatch",
         "requestBody": {
           "required": true,
           "content": {
@@ -376,9 +389,19 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "shipment_id": { "type": "integer", "example": 1, "description": "ID of the shipment to dispatch" },
-                  "driver_id": { "type": "integer", "description": "Optional specific driver ID (auto-selected if omitted)" },
-                  "vehicle_id": { "type": "integer", "description": "Optional specific vehicle ID (auto-selected if omitted)" }
+                  "shipment_id": {
+                    "type": "integer",
+                    "example": 1,
+                    "description": "ID of the shipment to dispatch"
+                  },
+                  "driver_id": {
+                    "type": "integer",
+                    "description": "Optional specific driver ID (auto-selected if omitted)"
+                  },
+                  "vehicle_id": {
+                    "type": "integer",
+                    "description": "Optional specific vehicle ID (auto-selected if omitted)"
+                  }
                 },
                 "required": ["shipment_id"]
               }
@@ -387,35 +410,27 @@
         },
         "responses": {
           "200": {
-            "description": "Dispatch assignment execution result",
+            "description": "Dispatch assignment successfully executed",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/OptimizeDispatchResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/OptimizeDispatchResponse"
+                }
               }
             }
+          },
+          "422": {
+            "description": "Insufficient resources available for assignment"
           }
         }
       }
     },
-    "/api/agent/tools": {
-      "get": {
-        "tags": ["Agent Tools"],
-        "summary": "Get AI Tool Calling Declarations Schema",
-        "description": "Returns standard function declarations formatted for OpenAI, Microsoft Copilot Studio, Anthropic, and Google Gemini.",
-        "operationId": "getToolsSchema",
-        "responses": {
-          "200": {
-            "description": "Tool calling definitions"
-          }
-        }
-      }
-    },
-    "/api/agent/execute": {
+    "/api/agent/update-shipment-status": {
       "post": {
-        "tags": ["Agent Tools"],
-        "summary": "Universal AI Tool Dispatcher",
-        "description": "Executes any registered agent tool dynamically by name with provided JSON parameters.",
-        "operationId": "executeTool",
+        "tags": ["ACTION_LOGISTICS_DATA"],
+        "summary": "Update Shipment Status",
+        "description": "Update an active shipment's status with audit log notes.",
+        "operationId": "updateShipmentStatus",
         "requestBody": {
           "required": true,
           "content": {
@@ -423,534 +438,155 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "tool_name": { "type": "string", "example": "get_executive_kpis", "description": "Registered function name to run" },
-                  "parameters": { "type": "object", "description": "Tool parameters dictionary", "example": {} }
+                  "shipment_id": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["manifested", "picked_up", "in_transit", "out_for_delivery", "delivered", "delayed", "cancelled"],
+                    "example": "in_transit"
+                  },
+                  "notes": {
+                    "type": "string",
+                    "example": "Passed midpoint weigh station with NIST cold-chain verified."
+                  }
                 },
-                "required": ["tool_name"]
+                "required": ["shipment_id", "status"]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Dynamic tool execution response"
+            "description": "Shipment status updated successfully"
           }
         }
       }
     },
-    "/api/companies": {
-      "get": {
-        "tags": ["Companies"],
-        "summary": "List all logistics companies",
-        "operationId": "listCompanies",
-        "parameters": [
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
-          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 15 } }
-        ],
-        "responses": { "200": { "description": "List of companies" } }
-      },
+    "/api/agent/cancel-shipment": {
       "post": {
-        "tags": ["Companies"],
-        "summary": "Create a new logistics enterprise organization",
-        "operationId": "createCompany",
+        "tags": ["ACTION_LOGISTICS_DATA"],
+        "summary": "Cancel Shipment Consignment",
+        "description": "Safely cancel an active shipment with audit reason and release assigned final-mile dispatches.",
+        "operationId": "cancelShipment",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CompanyInput" }
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "shipment_id": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "reason": {
+                    "type": "string",
+                    "example": "Customer requested order cancellation prior to hub departure."
+                  }
+                },
+                "required": ["shipment_id"]
+              }
             }
           }
         },
-        "responses": { "201": { "description": "Company created successfully" } }
+        "responses": {
+          "200": {
+            "description": "Shipment cancelled successfully"
+          }
+        }
       }
     },
-    "/api/companies/{id}": {
-      "get": {
-        "tags": ["Companies"],
-        "summary": "Get company by ID",
-        "operationId": "getCompanyById",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Company record" } }
-      },
-      "put": {
-        "tags": ["Companies"],
-        "summary": "Update company",
-        "operationId": "updateCompany",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CompanyInput" } } }
-        },
-        "responses": { "200": { "description": "Company updated" } }
-      },
-      "delete": {
-        "tags": ["Companies"],
-        "summary": "Delete company",
-        "operationId": "deleteCompany",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Company deleted" } }
-      }
-    },
-    "/api/users": {
-      "get": {
-        "tags": ["Users"],
-        "summary": "List logistics personnel and users",
-        "operationId": "listUsers",
-        "parameters": [
-          { "name": "role", "in": "query", "schema": { "type": "string" } },
-          { "name": "company_id", "in": "query", "schema": { "type": "integer" } },
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
-          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 15 } }
-        ],
-        "responses": { "200": { "description": "List of users" } }
-      },
+    "/api/agent/update-delivery-status": {
       "post": {
-        "tags": ["Users"],
-        "summary": "Create user account",
-        "operationId": "createUser",
+        "tags": ["ACTION_LOGISTICS_DATA"],
+        "summary": "Update Final-Mile Delivery Status",
+        "description": "Update progress of a delivery (e.g. en_route, arrived, completed) and record POD timestamps.",
+        "operationId": "updateDeliveryStatus",
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserInput" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "delivery_id": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["pending", "dispatched", "en_route", "arrived", "completed", "failed"],
+                    "example": "completed"
+                  },
+                  "notes": {
+                    "type": "string",
+                    "example": "Signed by Receiving Manager at Dock #4"
+                  }
+                },
+                "required": ["delivery_id", "status"]
+              }
+            }
+          }
         },
-        "responses": { "201": { "description": "User created" } }
+        "responses": {
+          "200": {
+            "description": "Delivery status updated successfully"
+          }
+        }
       }
     },
-    "/api/users/{id}": {
-      "get": {
-        "tags": ["Users"],
-        "summary": "Get user details",
-        "operationId": "getUserById",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "User record" } }
-      },
-      "put": {
-        "tags": ["Users"],
-        "summary": "Update user details",
-        "operationId": "updateUser",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserInput" } } }
-        },
-        "responses": { "200": { "description": "User updated" } }
-      },
-      "delete": {
-        "tags": ["Users"],
-        "summary": "Delete user",
-        "operationId": "deleteUser",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "User deleted" } }
-      }
-    },
-    "/api/customers": {
-      "get": {
-        "tags": ["Customers"],
-        "summary": "List commercial customer accounts",
-        "operationId": "listCustomers",
-        "parameters": [
-          { "name": "tier", "in": "query", "schema": { "type": "string", "enum": ["enterprise", "strategic", "priority", "standard"] } },
-          { "name": "search", "in": "query", "schema": { "type": "string" } },
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
-          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 15 } }
-        ],
-        "responses": { "200": { "description": "List of customers" } }
-      },
+    "/api/agent/cancel-delivery": {
       "post": {
-        "tags": ["Customers"],
-        "summary": "Create commercial customer account",
-        "operationId": "createCustomer",
+        "tags": ["ACTION_LOGISTICS_DATA"],
+        "summary": "Cancel Delivery Dispatch",
+        "description": "Cancel a final-mile delivery dispatch with reason.",
+        "operationId": "cancelDelivery",
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomerInput" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "delivery_id": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "reason": {
+                    "type": "string",
+                    "example": "Dock inaccessible due to severe weather."
+                  }
+                },
+                "required": ["delivery_id"]
+              }
+            }
+          }
         },
-        "responses": { "201": { "description": "Customer created" } }
-      }
-    },
-    "/api/customers/{id}": {
-      "get": {
-        "tags": ["Customers"],
-        "summary": "Get customer by ID",
-        "operationId": "getCustomerById",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Customer record" } }
-      },
-      "put": {
-        "tags": ["Customers"],
-        "summary": "Update customer account",
-        "operationId": "updateCustomer",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomerInput" } } }
-        },
-        "responses": { "200": { "description": "Customer updated" } }
-      },
-      "delete": {
-        "tags": ["Customers"],
-        "summary": "Delete customer",
-        "operationId": "deleteCustomer",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Customer deleted" } }
-      }
-    },
-    "/api/warehouses": {
-      "get": {
-        "tags": ["Warehouses"],
-        "summary": "List warehouse facilities and distribution superhubs",
-        "operationId": "listWarehouses",
-        "parameters": [
-          { "name": "type", "in": "query", "schema": { "type": "string", "enum": ["fulfillment", "distribution", "cross_dock", "cold_storage", "bonded"] } },
-          { "name": "city", "in": "query", "schema": { "type": "string" } },
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
-          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 15 } }
-        ],
-        "responses": { "200": { "description": "List of warehouses" } }
-      },
-      "post": {
-        "tags": ["Warehouses"],
-        "summary": "Register a new warehouse hub",
-        "operationId": "createWarehouse",
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WarehouseInput" } } }
-        },
-        "responses": { "201": { "description": "Warehouse registered" } }
-      }
-    },
-    "/api/warehouses/{id}": {
-      "get": {
-        "tags": ["Warehouses"],
-        "summary": "Get warehouse by ID",
-        "operationId": "getWarehouseById",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Warehouse details" } }
-      },
-      "put": {
-        "tags": ["Warehouses"],
-        "summary": "Update warehouse facility",
-        "operationId": "updateWarehouse",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WarehouseInput" } } }
-        },
-        "responses": { "200": { "description": "Warehouse updated" } }
-      },
-      "delete": {
-        "tags": ["Warehouses"],
-        "summary": "Delete warehouse facility",
-        "operationId": "deleteWarehouse",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Warehouse deleted" } }
-      }
-    },
-    "/api/drivers": {
-      "get": {
-        "tags": ["Drivers"],
-        "summary": "List commercial CDL-A drivers and live telemetry",
-        "operationId": "listDrivers",
-        "parameters": [
-          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["available", "on_trip", "off_duty", "suspended"] } },
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
-          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 15 } }
-        ],
-        "responses": { "200": { "description": "List of drivers" } }
-      },
-      "post": {
-        "tags": ["Drivers"],
-        "summary": "Onboard a new commercial driver",
-        "operationId": "createDriver",
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DriverInput" } } }
-        },
-        "responses": { "201": { "description": "Driver onboarded" } }
-      }
-    },
-    "/api/drivers/{id}": {
-      "get": {
-        "tags": ["Drivers"],
-        "summary": "Get driver by ID",
-        "operationId": "getDriverById",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Driver record" } }
-      },
-      "put": {
-        "tags": ["Drivers"],
-        "summary": "Update driver record",
-        "operationId": "updateDriver",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DriverInput" } } }
-        },
-        "responses": { "200": { "description": "Driver updated" } }
-      },
-      "delete": {
-        "tags": ["Drivers"],
-        "summary": "Delete driver",
-        "operationId": "deleteDriver",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Driver deleted" } }
-      }
-    },
-    "/api/vehicles": {
-      "get": {
-        "tags": ["Vehicles"],
-        "summary": "List fleet vehicles, trucks, and telematics",
-        "operationId": "listVehicles",
-        "parameters": [
-          { "name": "type", "in": "query", "schema": { "type": "string", "enum": ["semi_truck", "refrigerated", "flatbed", "electric_van", "box_truck"] } },
-          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["active", "in_transit", "maintenance", "idle"] } },
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
-          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 15 } }
-        ],
-        "responses": { "200": { "description": "List of vehicles" } }
-      },
-      "post": {
-        "tags": ["Vehicles"],
-        "summary": "Add a new fleet asset vehicle",
-        "operationId": "createVehicle",
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/VehicleInput" } } }
-        },
-        "responses": { "201": { "description": "Vehicle registered" } }
-      }
-    },
-    "/api/vehicles/{id}": {
-      "get": {
-        "tags": ["Vehicles"],
-        "summary": "Get vehicle by ID",
-        "operationId": "getVehicleById",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Vehicle details" } }
-      },
-      "put": {
-        "tags": ["Vehicles"],
-        "summary": "Update vehicle",
-        "operationId": "updateVehicle",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/VehicleInput" } } }
-        },
-        "responses": { "200": { "description": "Vehicle updated" } }
-      },
-      "delete": {
-        "tags": ["Vehicles"],
-        "summary": "Delete vehicle",
-        "operationId": "deleteVehicle",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Vehicle deleted" } }
-      }
-    },
-    "/api/orders": {
-      "get": {
-        "tags": ["Orders"],
-        "summary": "List customer commercial freight orders",
-        "operationId": "listOrders",
-        "parameters": [
-          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["confirmed", "processing", "manifested", "shipped", "delivered", "cancelled"] } },
-          { "name": "priority", "in": "query", "schema": { "type": "string", "enum": ["standard", "express", "critical", "same_day"] } },
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
-          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 15 } }
-        ],
-        "responses": { "200": { "description": "List of orders" } }
-      },
-      "post": {
-        "tags": ["Orders"],
-        "summary": "Create a new commercial freight order",
-        "operationId": "createOrder",
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OrderInput" } } }
-        },
-        "responses": { "201": { "description": "Order created" } }
-      }
-    },
-    "/api/orders/{id}": {
-      "get": {
-        "tags": ["Orders"],
-        "summary": "Get order by ID",
-        "operationId": "getOrderById",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Order details" } }
-      },
-      "put": {
-        "tags": ["Orders"],
-        "summary": "Update order",
-        "operationId": "updateOrder",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OrderInput" } } }
-        },
-        "responses": { "200": { "description": "Order updated" } }
-      },
-      "delete": {
-        "tags": ["Orders"],
-        "summary": "Delete order",
-        "operationId": "deleteOrder",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Order deleted" } }
-      }
-    },
-    "/api/routes": {
-      "get": {
-        "tags": ["Routes"],
-        "summary": "List freight corridors and transport routes",
-        "operationId": "listRoutes",
-        "parameters": [
-          { "name": "risk_level", "in": "query", "schema": { "type": "string", "enum": ["low", "medium", "high", "severe_weather"] } },
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
-          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 15 } }
-        ],
-        "responses": { "200": { "description": "List of routes" } }
-      },
-      "post": {
-        "tags": ["Routes"],
-        "summary": "Define a new freight route corridor",
-        "operationId": "createRoute",
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RouteInput" } } }
-        },
-        "responses": { "201": { "description": "Route created" } }
-      }
-    },
-    "/api/routes/{id}": {
-      "get": {
-        "tags": ["Routes"],
-        "summary": "Get route by ID",
-        "operationId": "getRouteById",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Route details" } }
-      },
-      "put": {
-        "tags": ["Routes"],
-        "summary": "Update route",
-        "operationId": "updateRoute",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RouteInput" } } }
-        },
-        "responses": { "200": { "description": "Route updated" } }
-      },
-      "delete": {
-        "tags": ["Routes"],
-        "summary": "Delete route",
-        "operationId": "deleteRoute",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Route deleted" } }
-      }
-    },
-    "/api/shipments": {
-      "get": {
-        "tags": ["Shipments"],
-        "summary": "List active line-haul shipments",
-        "operationId": "listShipments",
-        "parameters": [
-          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["manifested", "picked_up", "in_transit", "out_for_delivery", "delivered", "delayed", "cancelled"] } },
-          { "name": "temperature_controlled", "in": "query", "schema": { "type": "boolean" } },
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
-          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 15 } }
-        ],
-        "responses": { "200": { "description": "List of shipments" } }
-      },
-      "post": {
-        "tags": ["Shipments"],
-        "summary": "Create and manifest a new shipment",
-        "operationId": "createShipment",
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ShipmentInput" } } }
-        },
-        "responses": { "201": { "description": "Shipment manifested" } }
-      }
-    },
-    "/api/shipments/{id}": {
-      "get": {
-        "tags": ["Shipments"],
-        "summary": "Get shipment by ID",
-        "operationId": "getShipmentById",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Shipment details" } }
-      },
-      "put": {
-        "tags": ["Shipments"],
-        "summary": "Update shipment status / logs",
-        "operationId": "updateShipment",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ShipmentInput" } } }
-        },
-        "responses": { "200": { "description": "Shipment updated" } }
-      },
-      "delete": {
-        "tags": ["Shipments"],
-        "summary": "Cancel shipment",
-        "operationId": "deleteShipment",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Shipment deleted" } }
-      }
-    },
-    "/api/deliveries": {
-      "get": {
-        "tags": ["Deliveries"],
-        "summary": "List final-mile fulfillment deliveries",
-        "operationId": "listDeliveries",
-        "parameters": [
-          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["pending", "dispatched", "en_route", "arrived", "completed", "failed"] } },
-          { "name": "driver_id", "in": "query", "schema": { "type": "integer" } },
-          { "name": "vehicle_id", "in": "query", "schema": { "type": "integer" } },
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
-          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 15 } }
-        ],
-        "responses": { "200": { "description": "List of deliveries" } }
-      },
-      "post": {
-        "tags": ["Deliveries"],
-        "summary": "Schedule or create a delivery dispatch",
-        "operationId": "createDelivery",
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DeliveryInput" } } }
-        },
-        "responses": { "201": { "description": "Delivery scheduled" } }
-      }
-    },
-    "/api/deliveries/{id}": {
-      "get": {
-        "tags": ["Deliveries"],
-        "summary": "Get delivery by ID",
-        "operationId": "getDeliveryById",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Delivery details" } }
-      },
-      "put": {
-        "tags": ["Deliveries"],
-        "summary": "Update delivery status / POD",
-        "operationId": "updateDelivery",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "requestBody": {
-          "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DeliveryInput" } } }
-        },
-        "responses": { "200": { "description": "Delivery updated" } }
-      },
-      "delete": {
-        "tags": ["Deliveries"],
-        "summary": "Cancel delivery",
-        "operationId": "deleteDelivery",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
-        "responses": { "200": { "description": "Delivery cancelled" } }
+        "responses": {
+          "200": {
+            "description": "Delivery cancelled"
+          }
+        }
       }
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Enter your Bearer / JWT token to authenticate tenant context."
+      },
+      "companyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Company-ID",
+        "description": "Tenant company context identifier"
+      }
+    },
     "schemas": {
       "ExecutiveKpisResponse": {
         "type": "object",
@@ -963,8 +599,8 @@
                 "type": "object",
                 "properties": {
                   "total_gross_usd": { "type": "number", "example": 2548200.00 },
-                  "total_orders": { "type": "integer", "example": 55 },
-                  "active_orders": { "type": "integer", "example": 42 }
+                  "active_order_pipeline_count": { "type": "integer", "example": 42 },
+                  "total_orders": { "type": "integer", "example": 55 }
                 }
               },
               "freight_operations": {
@@ -973,16 +609,19 @@
                   "active_shipments": { "type": "integer", "example": 40 },
                   "delivered_shipments": { "type": "integer", "example": 15 },
                   "delayed_shipments": { "type": "integer", "example": 2 },
-                  "on_time_delivery_pct": { "type": "number", "example": 98.5 }
+                  "on_time_delivery_pct": { "type": "number", "example": 98.5 },
+                  "active_deliveries": { "type": "integer", "example": 38 },
+                  "completed_deliveries": { "type": "integer", "example": 17 }
                 }
               },
               "fleet_telematics": {
                 "type": "object",
                 "properties": {
                   "total_vehicles": { "type": "integer", "example": 52 },
-                  "in_transit_vehicles": { "type": "integer", "example": 38 },
+                  "active_in_transit_vehicles": { "type": "integer", "example": 38 },
                   "fleet_utilization_pct": { "type": "number", "example": 73.1 },
                   "total_drivers": { "type": "integer", "example": 52 },
+                  "active_drivers_on_trip": { "type": "integer", "example": 38 },
                   "avg_safety_score": { "type": "number", "example": 98.8 }
                 }
               },
@@ -990,8 +629,9 @@
                 "type": "object",
                 "properties": {
                   "total_warehouses": { "type": "integer", "example": 52 },
+                  "total_capacity_sqft": { "type": "number", "example": 28500000 },
                   "avg_utilization_pct": { "type": "number", "example": 74.2 },
-                  "bottlenecks_flagged": { "type": "integer", "example": 3 }
+                  "critical_exceptions_count": { "type": "integer", "example": 6 }
                 }
               }
             }
@@ -1007,13 +647,16 @@
             "type": "object",
             "properties": {
               "in_transit": { "type": "integer", "example": 35 },
-              "active_available": { "type": "integer", "example": 10 },
+              "active_idle": { "type": "integer", "example": 10 },
               "in_maintenance": { "type": "integer", "example": 4 },
-              "low_fuel_warning": { "type": "integer", "example": 2 },
-              "drivers_available": { "type": "integer", "example": 12 }
+              "drivers_available": { "type": "integer", "example": 12 },
+              "drivers_on_trip": { "type": "integer", "example": 38 }
             }
           },
-          "vehicles": { "type": "array", "items": { "type": "object" } }
+          "vehicles": {
+            "type": "array",
+            "items": { "type": "object" }
+          }
         }
       },
       "TrackingResponse": {
@@ -1029,7 +672,7 @@
         "properties": {
           "success": { "type": "boolean", "example": true },
           "total_warehouses": { "type": "integer", "example": 52 },
-          "threshold_evaluated_pct": { "type": "number", "example": 80 },
+          "threshold_pct_used": { "type": "number", "example": 80 },
           "bottlenecks_detected": { "type": "integer", "example": 4 },
           "bottleneck_facilities": { "type": "array", "items": { "type": "object" } },
           "all_facilities": { "type": "array", "items": { "type": "object" } }
@@ -1070,227 +713,25 @@
         "type": "object",
         "properties": {
           "success": { "type": "boolean", "example": true },
-          "message": { "type": "string", "example": "Driver and vehicle successfully dispatched to consignment." },
+          "message": { "type": "string", "example": "Dispatch executed successfully." },
           "shipment": { "type": "object" },
-          "delivery": { "type": "object" },
-          "assigned_driver": { "type": "object" },
-          "assigned_vehicle": { "type": "object" }
+          "delivery": { "type": "object" }
         }
       },
-      "CompanyInput": {
+      "PaginatedListResponse": {
         "type": "object",
         "properties": {
-          "name": { "type": "string", "example": "Titan Apex Global Logistics" },
-          "code": { "type": "string", "example": "TITAN-APEX" },
-          "email": { "type": "string", "example": "operations@titanapex.com" },
-          "phone": { "type": "string", "example": "+1 (800) 555-8482" },
-          "headquarters_address": { "type": "string", "example": "333 S Wabash Ave, Suite 4200, Chicago, IL 60604" },
-          "country": { "type": "string", "example": "USA" },
-          "currency": { "type": "string", "example": "USD" },
-          "timezone": { "type": "string", "example": "America/Chicago" },
-          "fleet_size": { "type": "integer", "example": 450 },
-          "ceo_name": { "type": "string", "example": "Alexander Vance" },
-          "status": { "type": "string", "enum": ["active", "suspended", "inactive"], "default": "active" }
-        },
-        "required": ["name", "code", "email"]
-      },
-      "UserInput": {
-        "type": "object",
-        "properties": {
-          "company_id": { "type": "integer", "example": 1 },
-          "name": { "type": "string", "example": "Marcus Sterling" },
-          "email": { "type": "string", "example": "marcus.sterling@logistics.corp" },
-          "password": { "type": "string", "example": "SecretPass123!" },
-          "role": { "type": "string", "enum": ["ceo", "operations_manager", "dispatcher", "warehouse_manager", "driver", "analyst", "customer_admin"], "default": "dispatcher" },
-          "phone": { "type": "string", "example": "+1 (312) 555-0182" },
-          "status": { "type": "string", "enum": ["active", "inactive", "suspended"], "default": "active" }
-        },
-        "required": ["company_id", "name", "email"]
-      },
-      "CustomerInput": {
-        "type": "object",
-        "properties": {
-          "company_id": { "type": "integer", "example": 1 },
-          "customer_code": { "type": "string", "example": "CUST-TSLA-01" },
-          "name": { "type": "string", "example": "Tesla Gigafactory Supply Chain" },
-          "company_name": { "type": "string", "example": "Tesla Motors Inc." },
-          "email": { "type": "string", "example": "logistics@tesla.corp" },
-          "phone": { "type": "string", "example": "+1 (512) 555-0144" },
-          "tax_id": { "type": "string", "example": "US-94-1234567" },
-          "billing_address": { "type": "string", "example": "1 Tesla Rd, Austin, TX 78725" },
-          "shipping_address": { "type": "string", "example": "1 Tesla Rd, Receiving Dock #4, Austin, TX 78725" },
-          "tier": { "type": "string", "enum": ["enterprise", "strategic", "priority", "standard"], "default": "enterprise" },
-          "credit_limit": { "type": "number", "example": 1000000.00 },
-          "outstanding_balance": { "type": "number", "example": 184500.00 },
-          "status": { "type": "string", "enum": ["active", "hold", "inactive"], "default": "active" }
-        },
-        "required": ["company_id", "name", "email"]
-      },
-      "WarehouseInput": {
-        "type": "object",
-        "properties": {
-          "company_id": { "type": "integer", "example": 1 },
-          "code": { "type": "string", "example": "WH-ORD-01" },
-          "name": { "type": "string", "example": "Chicago O'Hare Midwest Super-Hub" },
-          "address": { "type": "string", "example": "10000 W O'Hare Ave, Chicago, IL 60666" },
-          "city": { "type": "string", "example": "Chicago" },
-          "state": { "type": "string", "example": "IL" },
-          "country": { "type": "string", "example": "USA" },
-          "zip_code": { "type": "string", "example": "60666" },
-          "latitude": { "type": "number", "example": 41.9803 },
-          "longitude": { "type": "number", "example": -87.8860 },
-          "capacity_sqft": { "type": "number", "example": 650000 },
-          "current_utilization_pct": { "type": "number", "example": 78.5 },
-          "type": { "type": "string", "enum": ["fulfillment", "distribution", "cross_dock", "cold_storage", "bonded"], "default": "cross_dock" },
-          "operating_hours": { "type": "string", "example": "24/7/365" },
-          "manager_name": { "type": "string", "example": "Robert Vance" },
-          "manager_phone": { "type": "string", "example": "+1 (312) 555-9011" },
-          "manager_email": { "type": "string", "example": "manager.ord@titanapex.com" },
-          "status": { "type": "string", "enum": ["active", "inactive", "maintenance"], "default": "active" }
-        },
-        "required": ["company_id", "code", "name", "city", "capacity_sqft"]
-      },
-      "DriverInput": {
-        "type": "object",
-        "properties": {
-          "company_id": { "type": "integer", "example": 1 },
-          "user_id": { "type": "integer", "example": 10 },
-          "driver_code": { "type": "string", "example": "DRV-ORD-101" },
-          "first_name": { "type": "string", "example": "James" },
-          "last_name": { "type": "string", "example": "Miller" },
-          "license_number": { "type": "string", "example": "IL-CDL-984321X" },
-          "license_type": { "type": "string", "example": "Class A CDL (Hazmat & Doubles)" },
-          "license_expiry": { "type": "string", "format": "date", "example": "2028-06-30" },
-          "phone": { "type": "string", "example": "+1 (312) 555-7744" },
-          "emergency_contact": { "type": "string", "example": "Sarah Miller (+1 312-555-7745)" },
-          "current_latitude": { "type": "number", "example": 41.9803 },
-          "current_longitude": { "type": "number", "example": -87.8860 },
-          "status": { "type": "string", "enum": ["available", "on_trip", "off_duty", "suspended"], "default": "available" },
-          "safety_score": { "type": "number", "example": 98.5 },
-          "rating": { "type": "number", "example": 4.95 }
-        },
-        "required": ["company_id", "first_name", "last_name", "license_number", "phone"]
-      },
-      "VehicleInput": {
-        "type": "object",
-        "properties": {
-          "company_id": { "type": "integer", "example": 1 },
-          "current_driver_id": { "type": "integer", "example": 1 },
-          "vehicle_code": { "type": "string", "example": "FLT-FREI-101" },
-          "plate_number": { "type": "string", "example": "US-1001-TR" },
-          "vin": { "type": "string", "example": "1FUJGLDR9NLBP1001" },
-          "make": { "type": "string", "example": "Freightliner" },
-          "model": { "type": "string", "example": "Cascadia Evolution 126" },
-          "year": { "type": "integer", "example": 2025 },
-          "type": { "type": "string", "enum": ["semi_truck", "refrigerated", "flatbed", "electric_van", "box_truck"], "default": "semi_truck" },
-          "max_weight_kg": { "type": "number", "example": 24000 },
-          "max_volume_cbm": { "type": "number", "example": 95 },
-          "odometer_km": { "type": "number", "example": 45000 },
-          "fuel_type": { "type": "string", "enum": ["diesel", "electric", "cng", "hybrid"], "default": "diesel" },
-          "fuel_level_pct": { "type": "number", "example": 85.0 },
-          "current_latitude": { "type": "number", "example": 41.9803 },
-          "current_longitude": { "type": "number", "example": -87.8860 },
-          "status": { "type": "string", "enum": ["active", "in_transit", "maintenance", "idle"], "default": "active" }
-        },
-        "required": ["company_id", "vehicle_code", "plate_number", "vin", "make", "model", "type", "max_weight_kg"]
-      },
-      "OrderInput": {
-        "type": "object",
-        "properties": {
-          "company_id": { "type": "integer", "example": 1 },
-          "customer_id": { "type": "integer", "example": 1 },
-          "order_number": { "type": "string", "example": "ORD-2026-01001" },
-          "order_date": { "type": "string", "format": "date", "example": "2026-08-26" },
-          "required_delivery_date": { "type": "string", "format": "date", "example": "2026-08-29" },
-          "priority": { "type": "string", "enum": ["standard", "express", "critical", "same_day"], "default": "standard" },
-          "total_amount": { "type": "number", "example": 184500.00 },
-          "currency": { "type": "string", "example": "USD" },
-          "payment_status": { "type": "string", "enum": ["pending", "paid", "net_30", "net_60", "overdue"], "default": "net_30" },
-          "status": { "type": "string", "enum": ["confirmed", "processing", "manifested", "shipped", "delivered", "cancelled"], "default": "confirmed" },
-          "items_count": { "type": "integer", "example": 12 },
-          "total_weight_kg": { "type": "number", "example": 8500 },
-          "total_volume_cbm": { "type": "number", "example": 35 },
-          "order_items": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "sku": { "type": "string", "example": "EV-CELL-4680" },
-                "description": { "type": "string", "example": "4680 Structural Battery Cell Trays" },
-                "qty": { "type": "integer", "example": 12 },
-                "unit_price": { "type": "number", "example": 15375.00 },
-                "total": { "type": "number", "example": 184500.00 }
-              }
+          "success": { "type": "boolean", "example": true },
+          "data": { "type": "array", "items": { "type": "object" } },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "total": { "type": "integer", "example": 55 },
+              "current_page": { "type": "integer", "example": 1 },
+              "last_page": { "type": "integer", "example": 3 }
             }
           }
-        },
-        "required": ["company_id", "customer_id", "order_number", "order_date", "total_amount"]
-      },
-      "RouteInput": {
-        "type": "object",
-        "properties": {
-          "company_id": { "type": "integer", "example": 1 },
-          "origin_warehouse_id": { "type": "integer", "example": 1 },
-          "destination_warehouse_id": { "type": "integer", "example": 2 },
-          "route_code": { "type": "string", "example": "RT-ORD-DFW-10" },
-          "name": { "type": "string", "example": "Chicago to Dallas Freight Corridor" },
-          "origin_name": { "type": "string", "example": "Chicago O'Hare Hub" },
-          "destination_name": { "type": "string", "example": "Dallas DFW Gateway" },
-          "origin_latitude": { "type": "number", "example": 41.9803 },
-          "origin_longitude": { "type": "number", "example": -87.8860 },
-          "destination_latitude": { "type": "number", "example": 32.8998 },
-          "destination_longitude": { "type": "number", "example": -97.0403 },
-          "distance_km": { "type": "number", "example": 1480 },
-          "estimated_duration_minutes": { "type": "integer", "example": 820 },
-          "toll_cost": { "type": "number", "example": 45.00 },
-          "fuel_consumption_liters": { "type": "number", "example": 518.00 },
-          "risk_level": { "type": "string", "enum": ["low", "medium", "high", "severe_weather"], "default": "low" },
-          "status": { "type": "string", "enum": ["active", "inactive", "diverted"], "default": "active" }
-        },
-        "required": ["company_id", "origin_warehouse_id", "destination_warehouse_id", "route_code", "distance_km"]
-      },
-      "ShipmentInput": {
-        "type": "object",
-        "properties": {
-          "company_id": { "type": "integer", "example": 1 },
-          "order_id": { "type": "integer", "example": 1 },
-          "origin_warehouse_id": { "type": "integer", "example": 1 },
-          "destination_warehouse_id": { "type": "integer", "example": 2 },
-          "route_id": { "type": "integer", "example": 1 },
-          "shipment_number": { "type": "string", "example": "SHP-260001" },
-          "tracking_number": { "type": "string", "example": "TRK-1000-9999-01" },
-          "carrier_type": { "type": "string", "enum": ["in_house", "contracted_carrier", "third_party_3pl"], "default": "in_house" },
-          "carrier_name": { "type": "string", "example": "Titan Apex Dedicated Fleet" },
-          "temperature_controlled": { "type": "boolean", "default": false },
-          "target_temp_celsius": { "type": "number", "example": 4.0 },
-          "status": { "type": "string", "enum": ["manifested", "picked_up", "in_transit", "out_for_delivery", "delivered", "delayed", "cancelled"], "default": "in_transit" },
-          "estimated_departure": { "type": "string", "format": "date-time", "example": "2026-08-26T08:00:00Z" },
-          "estimated_arrival": { "type": "string", "format": "date-time", "example": "2026-08-27T18:00:00Z" },
-          "special_instructions": { "type": "string", "example": "Maintain NIST 2°C to 8°C cold chain telemetry." }
-        },
-        "required": ["company_id", "order_id", "origin_warehouse_id", "destination_warehouse_id", "shipment_number", "tracking_number"]
-      },
-      "DeliveryInput": {
-        "type": "object",
-        "properties": {
-          "company_id": { "type": "integer", "example": 1 },
-          "shipment_id": { "type": "integer", "example": 1 },
-          "driver_id": { "type": "integer", "example": 1 },
-          "vehicle_id": { "type": "integer", "example": 1 },
-          "route_id": { "type": "integer", "example": 1 },
-          "delivery_number": { "type": "string", "example": "DEL-2026-8801" },
-          "recipient_name": { "type": "string", "example": "Commercial Receiving Dock #4" },
-          "recipient_phone": { "type": "string", "example": "+1 (800) 555-0199" },
-          "delivery_address": { "type": "string", "example": "1000 Industrial Logistics Parkway, Austin, TX 78725" },
-          "delivery_city": { "type": "string", "example": "Austin" },
-          "delivery_latitude": { "type": "number", "example": 30.1975 },
-          "delivery_longitude": { "type": "number", "example": -97.6664 },
-          "scheduled_window_start": { "type": "string", "format": "date-time", "example": "2026-08-27T14:00:00Z" },
-          "scheduled_window_end": { "type": "string", "format": "date-time", "example": "2026-08-27T18:00:00Z" },
-          "status": { "type": "string", "enum": ["pending", "dispatched", "en_route", "arrived", "completed", "failed"], "default": "en_route" },
-          "notes": { "type": "string", "example": "Final-mile delivery for consignment TRK-1000-9999-01." }
-        },
-        "required": ["company_id", "shipment_id", "delivery_number", "recipient_name", "delivery_address"]
+        }
       }
     }
   }

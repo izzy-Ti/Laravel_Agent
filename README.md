@@ -51,28 +51,36 @@ php artisan db:seed --force
 
 ---
 
-## 🤖 Copilot Studio & CEO Agent AI Tool Endpoints
+## 🤖 Microsoft Copilot Studio & CEO Agent AI Tool Suite
 
-| Endpoint | Method | Purpose |
-| :--- | :--- | :--- |
-| `/api/agent/ceo-kpis` | `GET` | High-level CEO Executive metrics (Gross revenue, Active loads, OTD %, Fleet utilization, Safety) |
-| `/api/agent/tools` | `GET` | OpenAI, Claude, Gemini, and Microsoft Copilot Studio tool calling schema definition |
-| `/api/agent/execute` | `POST` | Universal AI tool dispatcher (Execute any tool dynamically by name) |
-| `/api/agent/fleet-status` | `GET/POST` | Live GPS telematics, driver status, and low-fuel truck alerts |
-| `/api/agent/track` | `GET/POST` | Track any consignment by `tracking_number`, `shipment_number`, `order_number`, or `delivery_number` |
-| `/api/agent/warehouse-capacity` | `GET/POST` | Inspect warehouse capacity bottlenecks (>80% utilization) |
-| `/api/agent/critical-exceptions` | `GET/POST` | Audit delayed shipments, breakdown alerts, and credit risk |
-| `/api/agent/optimize-dispatch` | `POST` | Autonomously allocate optimal driver & vehicle to active shipments |
-| `/api/agent/customer-financials` | `GET/POST` | Inspect commercial accounts receivables and credit utilization |
-| `/openapi.json` | `GET` | OpenAPI 3.1 Specification for Microsoft Copilot Studio, LangChain, Dify, or Cursor |
+### 1. Executive Intelligence (`EXECUTIVE_INTELLIGENCE`)
+- **`getExecutiveKpis`** (`GET /api/agent/kpis`): Gross revenue, active shipments, fleet utilization %, OTD %, warehouse capacity %, and driver safety score.
+- **`getCriticalExceptions`** (`GET /api/agent/critical-exceptions`): Active delayed loads, breakdown/fuel alerts, severe weather routes, and credit exposure.
+
+### 2. Read Logistics Data (`READ_LOGISTICS_DATA`)
+- **`getFleetStatus`** (`GET /api/agent/fleet-status`): Live GPS telematics, truck operational status, and low-fuel alerts (<25%).
+- **`trackConsignment`** (`GET /api/agent/track`): Universal consignment tracker by `TRK-...`, `SHP-...`, `ORD-...`, or `DEL-...`.
+- **`getWarehouseCapacity`** (`GET /api/agent/warehouse-capacity`): Regional distribution superhub square-footage utilization and bottleneck detection (>80%).
+- **`getCustomerFinancials`** (`GET /api/agent/customer-financials`): B2B receivables, outstanding balances, and credit facility limits.
+- **`getShipments`** (`GET /api/agent/shipments`): Active line-haul shipments with origin/destination hubs and NIST cold chain logs.
+- **`getDeliveries`** (`GET /api/agent/deliveries`): Final-mile deliveries, driver assignments, and POD capture.
+- **`getDrivers`** (`GET /api/agent/drivers`): Commercial CDL-A drivers, safety scores, and status.
+- **`getVehicles`** (`GET /api/agent/vehicles`): Fleet trucks, reefers, payload capacities, and maintenance schedules.
+
+### 3. Action Logistics Data (`ACTION_LOGISTICS_DATA`)
+- **`assignShipmentDispatch`** (`POST /api/agent/dispatch`): Assign driver and vehicle to shipment with automated resource selection if omitted.
+- **`updateShipmentStatus`** (`POST /api/agent/update-shipment-status`): Update consignment status with audit instructions.
+- **`cancelShipment`** (`POST /api/agent/cancel-shipment`): Safely cancel shipment and release final-mile deliveries.
+- **`updateDeliveryStatus`** (`POST /api/agent/update-delivery-status`): Update delivery progression and record POD timestamps.
+- **`cancelDelivery`** (`POST /api/agent/cancel-delivery`): Cancel delivery dispatches with reason.
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start & Copilot Studio Integration
 
-1. Start development server:
+1. Start the server:
    ```bash
    php artisan serve
    ```
-2. Open the Executive Command Center in your browser at `http://localhost:8000`.
-3. Connect Microsoft Copilot Studio or any AI agent to `/openapi.json` to enable autonomous tool calling against the live Neon PostgreSQL database.
+2. Import `http://localhost:8000/openapi.json` into **Microsoft Copilot Studio** (Actions / Custom Plugins).
+3. Authenticate with your Bearer Token / API Key (`X-Company-ID`).

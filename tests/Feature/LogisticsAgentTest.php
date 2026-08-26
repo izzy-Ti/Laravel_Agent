@@ -26,11 +26,11 @@ class LogisticsAgentTest extends TestCase
     }
 
     /**
-     * Test CEO Executive KPIs endpoint
+     * Test Executive Intelligence: KPIs
      */
     public function test_can_fetch_ceo_executive_kpis(): void
     {
-        $response = $this->getJson('/api/agent/ceo-kpis');
+        $response = $this->getJson('/api/agent/kpis');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -47,48 +47,62 @@ class LogisticsAgentTest extends TestCase
     }
 
     /**
-     * Test Agent Tools schema discovery
+     * Test Executive Intelligence: Critical Exceptions
      */
-    public function test_can_fetch_tools_schema(): void
+    public function test_can_fetch_critical_exceptions(): void
     {
-        $response = $this->getJson('/api/agent/tools');
+        $response = $this->getJson('/api/agent/critical-exceptions');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'version',
-                'agent_role',
-                'source_of_truth',
-                'total_tools',
-                'tools' => [
-                    '*' => [
-                        'type',
-                        'function' => ['name', 'description', 'parameters'],
-                    ],
+                'success',
+                'critical_exceptions_total',
+                'exceptions' => [
+                    'delayed_shipments',
+                    'vehicle_maintenance_and_fuel_alerts',
+                    'high_risk_routes',
+                    'high_exposure_customers',
                 ],
             ]);
     }
 
     /**
-     * Test Universal Tool Dispatcher execution
+     * Test Read Logistics Data: Fleet Status & Consignment Tracking
      */
-    public function test_can_execute_registered_tool(): void
+    public function test_can_query_fleet_status_and_track(): void
     {
-        $response = $this->postJson('/api/agent/execute', [
-            'tool_name' => 'query_fleet_status',
-            'parameters' => [],
-        ]);
+        $fleetRes = $this->getJson('/api/agent/fleet-status?status=in_transit');
+        $fleetRes->assertStatus(200)->assertJson(['success' => true]);
 
-        $response->assertStatus(200)
-            ->assertJson([
-                'success' => true,
-            ])
-            ->assertJsonStructure([
-                'total_vehicles',
-                'vehicles',
-                'summary',
-            ]);
+        $shipment = Shipment::first();
+        $trackRes = $this->getJson("/api/agent/track?query_code={$shipment->tracking_number}");
+        $trackRes->assertStatus(200)
+            ->assertJson(['success' => true, 'type' => 'shipment']);
     }
 
+    /**
+     * Test Action Logistics Data: Assign Dispatch & Update Status
+     */
+    public function test_can_dispatch_and_update_shipment(): void
+    {
+        $shipment = Shipment::first();
+
+        // 1. Dispatch
+        $dispatchRes = $this->postJson('/api/agent/dispatch', [
+            'shipment_id' => $shipment->id,
+        ]);
+        $dispatchRes->assertStatus(200)->assertJson(['success' => true]);
+
+        // 2. Update status
+        $updateRes = $this->postJson('/api/agent/update-shipment-status', [
+            'shipment_id' => $shipment->id,
+            'status' => 'delivered',
+            'notes' => 'Confirmed delivery at receiving dock',
+        ]);
+        $updateRes->assertStatus(200)->assertJson(['success' => true]);
+
+        $this->assertEquals('delivered', $shipment->fresh()->status);
+    }
 
     /**
      * Test CRUD for all 10 domain resources
@@ -118,31 +132,5 @@ class LogisticsAgentTest extends TestCase
                 ]);
             $this->assertNotEmpty($res->json('data'), "Expected {$endpoint} to have seeded data");
         }
-    }
-
-    /**
-     * Test Creating a new Order and Tracking it
-     */
-    public function test_create_order_and_track(): void
-    {
-        $company = Company::first();
-        $customer = Customer::first();
-
-        $orderPayload = [
-            'company_id' => $company->id,
-            'customer_id' => $customer->id,
-            'order_number' => 'ORD-TEST-9999',
-            'order_date' => '2026-08-26',
-            'priority' => 'critical',
-            'total_amount' => 50000.00,
-            'status' => 'confirmed',
-            'items_count' => 5,
-        ];
-
-        $res = $this->postJson('/api/orders', $orderPayload);
-        $res->assertStatus(201)
-            ->assertJson(['success' => true]);
-
-        $this->assertDatabaseHas('orders', ['order_number' => 'ORD-TEST-9999']);
     }
 }

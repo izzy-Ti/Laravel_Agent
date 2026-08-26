@@ -17,14 +17,41 @@ use App\Http\Controllers\Api\DeliveryController;
 |--------------------------------------------------------------------------
 | LOGISTICS CEO AGENT - SOURCE OF TRUTH REST API & TOOL ENDPOINTS
 |--------------------------------------------------------------------------
-| This API acts as the single source of truth for the Logistics CEO Agent,
-| backing all 10 core domain resources, Postgres/Supabase telemetry,
-| tool calling discovery, and autonomous agent reasoning.
+| Backing the Logistics CEO Agent with executive intelligence, read
+| telematics, narrow business actions, and full enterprise domain resources.
 |
 */
 
 // =========================================================================
-// 1. Core Logistics Domain Resources (The 10 Required Entities)
+// 1. Executive CEO Agent Tool Suite (Structured for Copilot Studio)
+// =========================================================================
+Route::prefix('agent')->group(function () {
+    // 1.1 Executive Intelligence
+    Route::get('/ceo-kpis', [AgentToolController::class, 'getExecutiveKpis']);
+    Route::get('/kpis', [AgentToolController::class, 'getExecutiveKpis']);
+    Route::get('/critical-exceptions', [AgentToolController::class, 'flagCriticalExceptions']);
+
+    // 1.2 Read Logistics Data Tools (Pure Single GET operations)
+    Route::get('/fleet-status', [AgentToolController::class, 'queryFleetStatus']);
+    Route::get('/track', [AgentToolController::class, 'trackShipmentOrDelivery']);
+    Route::get('/warehouse-capacity', [AgentToolController::class, 'inspectWarehouseCapacity']);
+    Route::get('/customer-financials', [AgentToolController::class, 'getCustomerFinancials']);
+    Route::get('/shipments', [AgentToolController::class, 'getShipments']);
+    Route::get('/deliveries', [AgentToolController::class, 'getDeliveries']);
+    Route::get('/drivers', [AgentToolController::class, 'getDrivers']);
+    Route::get('/vehicles', [AgentToolController::class, 'getVehicles']);
+
+    // 1.3 Action Logistics Data Tools (Narrow, Controlled Business Actions)
+    Route::post('/dispatch', [AgentToolController::class, 'optimizeOrAssignDispatch']);
+    Route::post('/optimize-dispatch', [AgentToolController::class, 'optimizeOrAssignDispatch']);
+    Route::post('/update-shipment-status', [AgentToolController::class, 'updateShipmentStatus']);
+    Route::post('/cancel-shipment', [AgentToolController::class, 'cancelShipment']);
+    Route::post('/update-delivery-status', [AgentToolController::class, 'updateDeliveryStatus']);
+    Route::post('/cancel-delivery', [AgentToolController::class, 'cancelDelivery']);
+});
+
+// =========================================================================
+// 2. Core Logistics Domain Resources (Internal Application CRUD)
 // =========================================================================
 Route::apiResource('companies', CompanyController::class);
 Route::apiResource('users', UserController::class);
@@ -38,29 +65,7 @@ Route::apiResource('shipments', ShipmentController::class);
 Route::apiResource('deliveries', DeliveryController::class);
 
 // =========================================================================
-// 2. Executive CEO Agent Intelligence & Tool Suite
-// =========================================================================
-Route::prefix('agent')->group(function () {
-    // Executive CEO High-Level KPI Summary (Source of Truth Dashboard)
-    Route::get('/ceo-kpis', [AgentToolController::class, 'getExecutiveKpis']);
-
-    // Direct Tool Endpoints
-    Route::match(['get', 'post'], '/fleet-status', [AgentToolController::class, 'queryFleetStatus']);
-    Route::match(['get', 'post'], '/track', [AgentToolController::class, 'trackShipmentOrDelivery']);
-    Route::match(['get', 'post'], '/warehouse-capacity', [AgentToolController::class, 'inspectWarehouseCapacity']);
-    Route::post('/optimize-dispatch', [AgentToolController::class, 'optimizeOrAssignDispatch']);
-    Route::match(['get', 'post'], '/critical-exceptions', [AgentToolController::class, 'flagCriticalExceptions']);
-    Route::match(['get', 'post'], '/customer-financials', [AgentToolController::class, 'getCustomerFinancials']);
-
-    // Universal AI Tool Calling Schema (OpenAI, Gemini, Anthropic Function Calling)
-    Route::get('/tools', [AgentToolController::class, 'getToolsSchema']);
-
-    // Universal Tool Dispatcher (Execute any registered tool by name)
-    Route::post('/execute', [AgentToolController::class, 'executeTool']);
-});
-
-// =========================================================================
-// 3. OpenAPI 3.1 Specification Route
+// 3. OpenAPI 3.0.3 Specification Route
 // =========================================================================
 Route::get('/openapi.json', function () {
     $path = public_path('openapi.json');

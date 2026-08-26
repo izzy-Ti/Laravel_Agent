@@ -732,36 +732,40 @@
             <div class="ceo-card">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div style="font-size:13px; font-weight:700; color:var(--primary); display:flex; align-items:center; gap:6px;">
-                        <span>⚡</span> Microsoft Copilot Studio & AI Tool Execution Console
+                        <span>⚡</span> Microsoft Copilot Studio & AI Tool Calling Console
                     </div>
-                    <span class="mono" style="font-size:11px; color:var(--text-muted);">POST /api/agent/execute &bull; Backed by Neon DB</span>
+                    <span class="mono" style="font-size:11px; color:var(--text-muted);">OpenAPI 3.0.3 &bull; Backed by Neon DB</span>
                 </div>
 
                 <div id="ceoLogs" class="terminal-box">
                     <div style="color: #38bdf8;">[SYSTEM] Connected to Neon PostgreSQL Source of Truth (ep-dry-star-ayj98cwp.c-5.us-east-2.aws.neon.tech).</div>
-                    <div style="color: #a7f3d0;">[COPILOT STUDIO READY] Tool dispatcher online. Microsoft Copilot Studio, LangChain, or GitHub Copilot can execute any tool directly against live telemetry.</div>
+                    <div style="color: #a7f3d0;">[COPILOT STUDIO READY] Clean toolset active. Import /openapi.json into Copilot Studio for autonomous tool execution.</div>
                 </div>
 
                 <div class="chat-input-row">
                     <select id="toolSelector" class="search-input" style="width:260px;" onchange="updateToolParams()">
-                        <option value="get_executive_kpis">get_executive_kpis</option>
-                        <option value="query_fleet_status">query_fleet_status</option>
-                        <option value="track_shipment_or_delivery">track_shipment_or_delivery</option>
-                        <option value="inspect_warehouse_capacity">inspect_warehouse_capacity</option>
-                        <option value="flag_critical_exceptions">flag_critical_exceptions</option>
-                        <option value="get_customer_financials">get_customer_financials</option>
+                        <option value="getExecutiveKpis">getExecutiveKpis (GET /kpis)</option>
+                        <option value="getCriticalExceptions">getCriticalExceptions (GET /critical-exceptions)</option>
+                        <option value="getFleetStatus">getFleetStatus (GET /fleet-status)</option>
+                        <option value="trackConsignment">trackConsignment (GET /track)</option>
+                        <option value="getWarehouseCapacity">getWarehouseCapacity (GET /warehouse-capacity)</option>
+                        <option value="getCustomerFinancials">getCustomerFinancials (GET /customer-financials)</option>
+                        <option value="assignShipmentDispatch">assignShipmentDispatch (POST /dispatch)</option>
+                        <option value="updateShipmentStatus">updateShipmentStatus (POST /update-shipment-status)</option>
+                        <option value="cancelShipment">cancelShipment (POST /cancel-shipment)</option>
                     </select>
-                    <input type="text" id="toolParamsInput" class="chat-input" placeholder='Tool arguments JSON, e.g. {"query_code":"TRK-1000-9999-01"}' value='{}'>
+                    <input type="text" id="toolParamsInput" class="chat-input" placeholder='Query/Body JSON, e.g. {"query_code":"TRK-1000-9999-01"}' value='{}'>
                     <button class="btn btn-primary" onclick="runSelectedTool()">Execute Tool</button>
                 </div>
 
                 <div class="chips-row">
-                    <button class="chip-btn" onclick="quickTool('get_executive_kpis', {})">📊 Executive KPIs</button>
-                    <button class="chip-btn" onclick="quickTool('query_fleet_status', {status: 'in_transit'})">🚛 In-Transit Fleet</button>
-                    <button class="chip-btn" onclick="quickTool('track_shipment_or_delivery', {query_code: 'TRK-1000-9999-01'})">📍 Track Consignment</button>
-                    <button class="chip-btn" onclick="quickTool('inspect_warehouse_capacity', {threshold_pct: 80})">🏬 Warehouse Bottlenecks</button>
-                    <button class="chip-btn" onclick="quickTool('flag_critical_exceptions', {})">⚠️ Critical Exceptions</button>
-                    <button class="chip-btn" onclick="quickTool('get_customer_financials', {})">💰 Customer Receivables</button>
+                    <button class="chip-btn" onclick="quickTool('getExecutiveKpis', {})">📊 getExecutiveKpis</button>
+                    <button class="chip-btn" onclick="quickTool('getCriticalExceptions', {})">⚠️ getCriticalExceptions</button>
+                    <button class="chip-btn" onclick="quickTool('getFleetStatus', {status: 'in_transit'})">🚛 getFleetStatus</button>
+                    <button class="chip-btn" onclick="quickTool('trackConsignment', {query_code: 'TRK-1000-9999-01'})">📍 trackConsignment</button>
+                    <button class="chip-btn" onclick="quickTool('getWarehouseCapacity', {threshold_pct: 80})">🏬 getWarehouseCapacity</button>
+                    <button class="chip-btn" onclick="quickTool('getCustomerFinancials', {})">💰 getCustomerFinancials</button>
+                    <button class="chip-btn" onclick="quickTool('assignShipmentDispatch', {shipment_id: 1})">⚡ assignShipmentDispatch</button>
                 </div>
             </div>
 
@@ -1036,16 +1040,22 @@
             }
         }
 
-        // 8. Execute Tool via /api/agent/execute (Copilot Studio Dispatcher)
+        // 8. Direct Copilot Tool Invocation (Clean Endpoint Execution)
         function updateToolParams() {
             const tool = document.getElementById('toolSelector').value;
             const input = document.getElementById('toolParamsInput');
-            if (tool === 'track_shipment_or_delivery') {
+            if (tool === 'trackConsignment') {
                 input.value = '{"query_code": "TRK-1000-9999-01"}';
-            } else if (tool === 'query_fleet_status') {
+            } else if (tool === 'getFleetStatus') {
                 input.value = '{"status": "in_transit"}';
-            } else if (tool === 'inspect_warehouse_capacity') {
+            } else if (tool === 'getWarehouseCapacity') {
                 input.value = '{"threshold_pct": 80}';
+            } else if (tool === 'assignShipmentDispatch') {
+                input.value = '{"shipment_id": 1}';
+            } else if (tool === 'updateShipmentStatus') {
+                input.value = '{"shipment_id": 1, "status": "delivered", "notes": "Completed at receiving dock."}';
+            } else if (tool === 'cancelShipment') {
+                input.value = '{"shipment_id": 1, "reason": "Customer cancellation prior to line-haul."}';
             } else {
                 input.value = '{}';
             }
@@ -1075,30 +1085,67 @@
 
             const userMsg = document.createElement('div');
             userMsg.style.color = '#38bdf8';
-            userMsg.textContent = `> COPILOT EXECUTE: ${toolName}(${JSON.stringify(params)})`;
+            userMsg.textContent = `> COPILOT ACTION: ${toolName}(${JSON.stringify(params)})`;
             logs.appendChild(userMsg);
 
             const waitMsg = document.createElement('div');
             waitMsg.style.color = '#f59e0b';
-            waitMsg.textContent = `[AGENT DISPATCHER] Executing tool against Neon PostgreSQL...`;
+            waitMsg.textContent = `[AGENT] Invoking ${toolName} against Neon PostgreSQL...`;
             logs.appendChild(waitMsg);
             logs.scrollTop = logs.scrollHeight;
 
+            let url = '/api/agent/kpis';
+            let method = 'GET';
+            let body = null;
+
+            switch (toolName) {
+                case 'getExecutiveKpis':
+                    url = '/api/agent/kpis';
+                    break;
+                case 'getCriticalExceptions':
+                    url = '/api/agent/critical-exceptions';
+                    break;
+                case 'getFleetStatus':
+                    url = '/api/agent/fleet-status?' + new URLSearchParams(params).toString();
+                    break;
+                case 'trackConsignment':
+                    url = '/api/agent/track?' + new URLSearchParams(params).toString();
+                    break;
+                case 'getWarehouseCapacity':
+                    url = '/api/agent/warehouse-capacity?' + new URLSearchParams(params).toString();
+                    break;
+                case 'getCustomerFinancials':
+                    url = '/api/agent/customer-financials?' + new URLSearchParams(params).toString();
+                    break;
+                case 'assignShipmentDispatch':
+                    url = '/api/agent/dispatch';
+                    method = 'POST';
+                    body = JSON.stringify(params);
+                    break;
+                case 'updateShipmentStatus':
+                    url = '/api/agent/update-shipment-status';
+                    method = 'POST';
+                    body = JSON.stringify(params);
+                    break;
+                case 'cancelShipment':
+                    url = '/api/agent/cancel-shipment';
+                    method = 'POST';
+                    body = JSON.stringify(params);
+                    break;
+            }
+
             try {
-                const res = await fetch('/api/agent/execute', {
-                    method: 'POST',
+                const res = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        tool_name: toolName,
-                        parameters: params
-                    })
+                    body: body
                 });
                 const json = await res.json();
                 waitMsg.remove();
 
                 const agentMsg = document.createElement('div');
                 agentMsg.style.color = '#a7f3d0';
-                agentMsg.innerHTML = `<strong>[TOOL RESULT: 200 OK]</strong><pre style="margin-top:4px; color:#f1f5f9; background:#1e293b; padding:6px; border-radius:4px; overflow-x:auto;">${JSON.stringify(json, null, 2)}</pre>`;
+                agentMsg.innerHTML = `<strong>[${method} ${url} - 200 OK]</strong><pre style="margin-top:4px; color:#f1f5f9; background:#1e293b; padding:6px; border-radius:4px; overflow-x:auto;">${JSON.stringify(json, null, 2)}</pre>`;
                 logs.appendChild(agentMsg);
             } catch (err) {
                 waitMsg.style.color = '#ef4444';
