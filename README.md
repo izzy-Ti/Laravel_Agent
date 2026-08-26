@@ -1,101 +1,82 @@
-# 🤖 Laravel AI Agent Development Suite & Toolset
+# 🚛 Logistics CEO Agent — Enterprise Source of Truth REST API & Tool Suite
 
-A reference architecture and learning playground for building **AI Agents** with **Laravel**.
-
-This project demonstrates how Autonomous AI Agents (using OpenAI Function Calling, Anthropic Tools, Gemini, LangChain, AutoGPT, or custom agent loops) connect to Laravel backend APIs to perform deterministic database operations and business logic.
+The definitive operational source of truth and autonomous tool-calling REST API for the **Logistics Chief Executive Officer (CEO) Agent**. Built on Laravel with full PostgreSQL / Supabase readiness.
 
 ---
 
-## 🛠️ The 4 Core Agent Tools
+## 🌟 The 10 Core Logistics Domain Entities
 
-| # | Tool Name | Endpoint | Method | Purpose |
-|---|-----------|----------|--------|---------|
-| 1 | `check_availability` | `/api/agent/check-availability` | `POST` | Check room availability, capacity, amenities, and dynamic nightly pricing for any date. |
-| 2 | `create_booking` | `/api/agent/create-booking` | `POST` | Create a confirmed reservation with conflict checking and confirmation codes (`RES-XXXXX`). |
-| 3 | `get_booking_details` | `/api/agent/get-booking-details` | `POST` / `GET` | Search and retrieve reservation details by `booking_id` or `customer_email`. |
-| 4 | `cancel_booking` | `/api/agent/cancel-booking` | `POST` | Cancel an existing reservation, update lifecycle status, and initiate automated refund. |
+This API implements full relational database models, migrations, relationships, seeders, and RESTful CRUD endpoints for all 10 core logistics entities:
+
+1. **`Users`** (`/api/users`) — Logistics staff, dispatchers, drivers, operations managers, and executive leadership.
+2. **`Companies`** (`/api/companies`) — Enterprise multi-tenant freight carriers, headquarters, and fleet configuration.
+3. **`Drivers`** (`/api/drivers`) — Commercial CDL drivers, live GPS coordinates, safety scores (e.g. 99.4/100), and duty status.
+4. **`Vehicles`** (`/api/vehicles`) — Heavy trucks (Cascadia, Volvo VNL), Reefers, Electric Vans, VINs, fuel levels, and maintenance schedules.
+5. **`Orders`** (`/api/orders`) — Commercial freight purchase orders, line items, cargo weights, volumes, and billing.
+6. **`Shipments`** (`/api/shipments`) — Line-haul consignments, tracking numbers (`TRK-...`), origin/destination warehouses, and cold chain logs.
+7. **`Deliveries`** (`/api/deliveries`) — Final-mile dispatch execution, proof of delivery (POD), driver assignment, and recipient signatures.
+8. **`Routes`** (`/api/routes`) — Standard interstate corridors, waypoints, tolls, fuel estimates, and weather risk levels.
+9. **`Warehouses`** (`/api/warehouses`) — Regional superhubs (Chicago, LA, Dallas, Atlanta), storage capacities, and utilization rates.
+10. **`Customers`** (`/api/customers`) — Commercial enterprise accounts (Tesla, Apple, BioNova Pharma, Whole Foods) with credit limits & receivables.
 
 ---
 
-## 🚀 Key Agent Development Features
+## 🐘 Supabase PostgreSQL Integration
 
-### 1. 📜 OpenAI-Compatible Tool Schema Catalog
-- **Endpoint**: `GET /api/agent/tools`
-- Returns full JSON Schema definitions of all 4 tools with parameter descriptions, types, enums, and required fields ready to be plugged into OpenAI API (`tools` parameter) or any agent framework.
+The API is pre-configured for Supabase PostgreSQL. Configure your `.env`:
 
-### 2. ⚡ Universal Tool Dispatcher
-- **Endpoint**: `POST /api/agent/execute`
-- Allows any AI agent to dispatch tool execution requests uniformly:
-```json
-{
-  "tool": "check_availability",
-  "arguments": {
-    "date": "2026-09-01",
-    "room_type": "deluxe"
-  }
-}
+```env
+# ==============================================================================
+# DATABASE CONFIGURATION: SUPABASE POSTGRESQL
+# ==============================================================================
+DB_CONNECTION=pgsql
+DB_HOST=aws-0-us-east-1.pooler.supabase.com   # Or your project host
+DB_PORT=5432                                  # 5432 (direct) or 6543 (pooler)
+DB_DATABASE=postgres
+DB_USERNAME=postgres.your-project-ref
+DB_PASSWORD=your-supabase-db-password
+DB_SSLMODE=require
+
+# Supabase REST / Storage / Auth API Credentials
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsIn...
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsIn...
 ```
 
-### 3. 🧠 Agent Chat & Reasoning Simulator
-- **Endpoint**: `POST /api/agent/chat`
-- Demonstrates an agent reasoning loop:
-  1. Receives natural language user prompt.
-  2. Extracts entities (dates, room types, emails, booking IDs).
-  3. Formulates reasoning `thought`.
-  4. Selects and calls the correct tool.
-  5. Synthesizes a natural language response based on raw tool output.
-
-### 4. 🖥️ Interactive Developer Playground
-- Open `/` in your browser to access the visual developer playground:
-  - Talk to the simulated AI concierge.
-  - Test each tool individually with sample inputs.
-  - Copy tool JSON schemas with 1 click.
-  - Live inspector viewing SQLite database records updated in real time.
-
----
-
-## 🏃 Getting Started
-
-### 1. Database Setup & Seed
+To run migrations and seed realistic logistics data on Supabase:
 ```bash
-php artisan migrate:fresh --seed
-```
-
-### 2. Run the Development Server
-```bash
-php artisan serve
-```
-Then visit `http://localhost:8000` to interact with the learning playground.
-
-### 3. Run Automated Tests
-```bash
-php tests/scratch_test.php
+php artisan migrate --force
+php artisan db:seed --force
 ```
 
 ---
 
-## 📖 How AI Agents Use These Tools
+## 🤖 CEO Agent Intelligence & AI Tool Endpoints
 
-When using OpenAI's chat completions API with Tools:
+| Endpoint | Method | Purpose |
+| :--- | :--- | :--- |
+| `/api/agent/ceo-kpis` | `GET` | High-level CEO Executive metrics (Gross revenue, Active loads, OTD %, Fleet utilization, Safety) |
+| `/api/agent/tools` | `GET` | OpenAI, Claude, Gemini tool calling schema definition |
+| `/api/agent/execute` | `POST` | Universal AI tool dispatcher (Execute any tool dynamically by name) |
+| `/api/agent/chat` / `/api/agent/ask-ceo` | `POST` | Autonomous CEO Agent reasoning engine (Accepts natural language queries) |
+| `/api/agent/fleet-status` | `GET/POST` | Live GPS telematics, driver status, and low-fuel truck alerts |
+| `/api/agent/track` | `GET/POST` | Track any consignment by `tracking_number`, `shipment_number`, `order_number`, or `delivery_number` |
+| `/api/agent/warehouse-capacity` | `GET/POST` | Inspect warehouse capacity bottlenecks (>80% utilization) |
+| `/api/agent/critical-exceptions` | `GET/POST` | Audit delayed shipments, breakdown alerts, and credit risk |
+| `/api/agent/optimize-dispatch` | `POST` | Autonomously allocate optimal driver & vehicle to active shipments |
+| `/api/agent/customer-financials` | `GET/POST` | Inspect commercial accounts receivables and credit utilization |
+| `/openapi.json` | `GET` | OpenAPI 3.1 Specification for LangChain, Dify, Flowise, or Cursor |
 
-```php
-$tools = Http::get('http://localhost:8000/api/agent/tools')->json()['tools'];
+---
 
-$response = $openai->chat()->create([
-    'model' => 'gpt-4o',
-    'messages' => [
-        ['role' => 'system', 'content' => 'You are a helpful hotel booking concierge.'],
-        ['role' => 'user', 'content' => 'Book a deluxe room on 2026-09-15 for Alex Rivera (alex@example.com)']
-    ],
-    'tools' => $tools,
-]);
+## 🚀 Quick Start
 
-// When the model returns a tool_call:
-$toolCall = $response->choices[0]->message->toolCalls[0];
-
-// Execute tool in Laravel:
-$toolOutput = Http::post('http://localhost:8000/api/agent/execute', [
-    'tool' => $toolCall->function->name,
-    'arguments' => json_decode($toolCall->function->arguments, true),
-]);
-```
+1. Start development server:
+   ```bash
+   php artisan serve
+   ```
+2. Open the Executive Command Center in your browser at `http://localhost:8000`.
+3. Try asking the CEO Agent:
+   - *"Give me an executive briefing on today's operations"*
+   - *"Where is shipment TRK-9832-7491-01 right now?"*
+   - *"Inspect warehouse capacity bottlenecks across all hubs"*

@@ -3,26 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laravel AI Agent Tool Suite & Learning Playground</title>
+    <title>Logistics ERP Source of Truth & CEO Agent</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #090d16;
-            --surface: #111827;
-            --surface-hover: #1f2937;
-            --border: #1e293b;
-            --border-highlight: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
+            --primary: #1e60f2;
+            --primary-hover: #154ec4;
+            --header-bg: #1e60f2;
+            --sidebar-bg: #131926;
+            --sidebar-dark: #0d121c;
+            --sidebar-border: #222b3d;
+            
+            --page-bg: #eaedf2;
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --border-light: #e2e8f0;
+            
+            --text-dark: #0f172a;
             --text-muted: #64748b;
-            --accent-purple: #8b5cf6;
-            --accent-indigo: #6366f1;
-            --accent-cyan: #06b6d4;
-            --accent-emerald: #10b981;
-            --accent-rose: #f43f5e;
-            --accent-amber: #f59e0b;
+            --text-light: #94a3b8;
+            --text-white: #ffffff;
+            
+            --emerald: #10b981;
+            --rose: #ef4444;
+            --amber: #f59e0b;
+            --cyan: #0284c7;
         }
 
         * {
@@ -32,881 +39,1039 @@
         }
 
         body {
-            background-color: var(--bg);
-            color: var(--text-primary);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            line-height: 1.6;
+            background-color: var(--page-bg);
+            color: var(--text-dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 12.5px;
+            line-height: 1.4;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            padding-bottom: 60px;
         }
 
-        code, pre {
-            font-family: 'Fira Code', monospace;
+        code, pre, .mono {
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 24px 20px;
-            width: 100%;
-        }
-
-        /* Top Header */
-        .hero {
-            text-align: center;
-            padding: 40px 0 30px;
-            position: relative;
-        }
-
-        .badge-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 14px;
-            border-radius: 9999px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            background: rgba(99, 102, 241, 0.15);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            color: #a5b4fc;
-            margin-bottom: 16px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .hero h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #818cf8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 12px;
-            letter-spacing: -0.5px;
-        }
-
-        .hero p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            max-width: 720px;
-            margin: 0 auto;
-        }
-
-        /* 4 Core Tools Overview Cards */
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 16px;
-            margin: 30px 0;
-        }
-
-        .tool-pill {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 20px;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .tool-pill:hover {
-            border-color: var(--border-highlight);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
-        }
-
-        .tool-pill .icon {
-            font-size: 1.6rem;
-            margin-bottom: 10px;
-            display: inline-block;
-        }
-
-        .tool-pill h3 {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tool-pill p {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .tool-method {
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--accent-emerald);
-        }
-
-        /* Section Layout */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 30px;
-        }
-
-        @media (max-width: 900px) {
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .panel-header {
+        /* Top ERP Navbar */
+        .top-navbar {
+            background-color: var(--header-bg);
+            height: 48px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 18px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid var(--border);
+            padding: 0 16px;
+            color: var(--text-white);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        .panel-title {
-            font-size: 1.15rem;
-            font-weight: 700;
+        .nav-left {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 20px;
         }
 
-        /* Chat Simulator */
-        .chat-container {
+        .logo-box {
             display: flex;
-            flex-direction: column;
-            height: 480px;
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding-right: 6px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .chat-msg {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-width: 92%;
-        }
-
-        .chat-msg.user {
-            align-self: flex-end;
-        }
-
-        .chat-msg.user .bubble {
-            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
-            color: #ffffff;
-            border-radius: 16px 16px 4px 16px;
-            padding: 12px 16px;
-            font-size: 0.92rem;
-        }
-
-        .chat-msg.agent {
-            align-self: flex-start;
-        }
-
-        .chat-msg.agent .bubble {
-            background: #1e293b;
-            border: 1px solid var(--border-highlight);
-            color: var(--text-primary);
-            border-radius: 16px 16px 16px 4px;
-            padding: 14px 18px;
-            font-size: 0.92rem;
-        }
-
-        .agent-thought-box {
-            background: rgba(15, 23, 42, 0.8);
-            border-left: 3px solid var(--accent-cyan);
-            padding: 10px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            color: #94a3b8;
-            margin-bottom: 8px;
-        }
-
-        .tool-badge {
-            display: inline-flex;
             align-items: center;
-            gap: 6px;
-            background: rgba(139, 92, 246, 0.2);
-            border: 1px solid rgba(139, 92, 246, 0.4);
-            color: #c4b5fd;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            font-family: 'Fira Code', monospace;
-            margin-bottom: 6px;
-        }
-
-        .prompt-chips {
-            display: flex;
             gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 12px;
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--text-white);
+            text-decoration: none;
+            letter-spacing: -0.02em;
         }
 
-        .chip {
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.78rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .chip:hover {
-            border-color: var(--accent-indigo);
-            color: #ffffff;
-            background: var(--surface-hover);
-        }
-
-        .chat-input-row {
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: #ffffff;
+            color: var(--primary);
+            border-radius: 6px;
             display: flex;
-            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 15px;
         }
 
-        .chat-input-row input {
-            flex: 1;
-            background: #0f172a;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 16px;
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-link-btn {
+            color: rgba(255, 255, 255, 0.85);
+            background: transparent;
+            border: none;
+            font-weight: 500;
+            font-size: 12.5px;
+            padding: 6px 10px;
+            border-radius: 4px;
+            transition: all 0.15s;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .nav-link-btn:hover, .nav-link-btn.active {
             color: #ffffff;
-            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.18);
+            font-weight: 600;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .db-status-pill {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 3px 10px;
+            border-radius: 14px;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            background: #4ade80;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #4ade80;
+        }
+
+        .user-pill {
+            background: #ffffff;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 11.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Main ERP Layout */
+        .erp-layout {
+            display: flex;
+            flex: 1;
+            min-height: calc(100vh - 48px);
+        }
+
+        /* Left Dark Sidebar / Job Inspector */
+        .left-sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            color: var(--text-white);
+            border-right: 1px solid var(--sidebar-border);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .search-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar-input {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 7px 10px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #0f172a;
             outline: none;
-            transition: border-color 0.2s;
         }
 
-        .chat-input-row input:focus {
-            border-color: var(--accent-indigo);
-        }
-
-        .btn {
-            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+        .btn-proceed {
+            background: var(--primary);
             color: #ffffff;
             border: none;
-            border-radius: 10px;
-            padding: 12px 20px;
+            border-radius: 4px;
+            padding: 7px 0;
+            width: 100%;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 12.5px;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: opacity 0.2s ease, transform 0.1s;
+            transition: background 0.15s;
+            text-align: center;
         }
 
-        .btn:hover {
-            opacity: 0.92;
-            transform: translateY(-1px);
+        .btn-proceed:hover {
+            background: var(--primary-hover);
         }
 
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border-highlight);
-            color: var(--text-secondary);
-        }
-
-        .btn-outline:hover {
-            background: var(--surface-hover);
-            color: #ffffff;
-        }
-
-        /* Tool Tabs Tester */
-        .tabs-nav {
+        .sidebar-card {
+            background: var(--sidebar-dark);
+            border: 1px solid var(--sidebar-border);
+            border-radius: 4px;
+            padding: 10px;
             display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 8px;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11.5px;
+        }
+
+        .meta-label {
+            color: var(--text-light);
+        }
+
+        .meta-val {
+            color: #ffffff;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* Right Main Content */
+        .main-content {
+            flex: 1;
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
             overflow-x: auto;
         }
 
-        .tab-btn {
-            background: transparent;
-            border: none;
+        /* Metric Summary Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .metric-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-title {
+            font-size: 11px;
+            font-weight: 600;
             color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .metric-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-top: 2px;
+        }
+
+        .metric-subtitle {
+            font-size: 10.5px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Entity Subtabs Bar */
+        .entity-tabs-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        .tab-buttons {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            overflow-x: auto;
+        }
+
+        .entity-tab {
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 12px;
             font-weight: 600;
-            font-size: 0.85rem;
-            padding: 8px 14px;
-            border-radius: 8px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-muted);
             cursor: pointer;
-            transition: all 0.2s;
             white-space: nowrap;
+            transition: all 0.15s;
         }
 
-        .tab-btn.active {
-            background: rgba(99, 102, 241, 0.15);
-            color: #a5b4fc;
+        .entity-tab:hover {
+            background: #f1f5f9;
+            color: var(--text-dark);
         }
 
-        .tool-form {
+        .entity-tab.active {
+            background: #eff6ff;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Table Card */
+        .table-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px 14px;
             display: flex;
             flex-direction: column;
+            gap: 10px;
+        }
+
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             gap: 12px;
         }
 
-        .form-row {
-            display: flex;
-            gap: 12px;
-        }
-
-        .form-group {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-group label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        .form-control {
-            background: #0f172a;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px 12px;
-            color: #ffffff;
-            font-size: 0.88rem;
+        .search-input {
+            width: 280px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 12px;
             outline: none;
         }
 
-        .form-control:focus {
-            border-color: var(--accent-indigo);
+        .search-input:focus {
+            border-color: var(--primary);
         }
 
-        /* JSON Output Box */
-        .json-box {
-            background: #090d16;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 14px;
-            color: #38bdf8;
-            font-size: 0.8rem;
-            max-height: 220px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-break: break-word;
-            margin-top: 14px;
+        .badge-count {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
-        /* Table */
         .table-wrap {
             overflow-x: auto;
-            width: 100%;
+            border: 1px solid var(--border-light);
+            border-radius: 4px;
+            max-height: 480px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem;
+            font-size: 12px;
             text-align: left;
         }
 
         th {
-            background: #0f172a;
-            padding: 12px 14px;
-            color: var(--text-muted);
+            background: #f8fafc;
+            color: #475569;
             font-weight: 600;
-            border-bottom: 1px solid var(--border);
-            text-transform: uppercase;
-            font-size: 0.72rem;
-            letter-spacing: 0.5px;
+            padding: 8px 10px;
+            border-bottom: 2px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            white-space: nowrap;
         }
 
         td {
-            padding: 12px 14px;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-secondary);
+            padding: 8px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+            vertical-align: middle;
+            white-space: nowrap;
         }
 
         tr:hover td {
-            background: rgba(30, 41, 59, 0.4);
-            color: var(--text-primary);
+            background: #f8fafc;
         }
 
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 2px 8px;
-            border-radius: 9999px;
-            font-size: 0.72rem;
-            font-weight: 700;
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 12px;
+            font-size: 10.5px;
+            font-weight: 600;
             text-transform: uppercase;
         }
 
-        .status-confirmed {
-            background: rgba(16, 185, 129, 0.15);
-            color: #34d399;
-            border: 1px solid rgba(16, 185, 129, 0.3);
+        .badge-in_transit, .badge-en_route, .badge-shipped, .badge-active {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
         }
 
-        .status-cancelled {
-            background: rgba(244, 63, 94, 0.15);
-            color: #fb7185;
-            border: 1px solid rgba(244, 63, 94, 0.3);
+        .badge-delivered, .badge-completed, .badge-paid {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
         }
 
-        .footer {
-            text-align: center;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-top: 30px;
+        .badge-delayed, .badge-failed, .badge-maintenance, .badge-critical {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
         }
 
-        .footer a {
-            color: var(--accent-cyan);
-            text-decoration: none;
+        .badge-pending, .badge-processing, .badge-net_30 {
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+
+        /* CEO Agent AI Terminal Card */
+        .ceo-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .terminal-box {
+            background: #0f172a;
+            color: #f8fafc;
+            border-radius: 4px;
+            padding: 12px;
+            height: 220px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11.5px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 7px 12px;
+            font-size: 12.5px;
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background: #ffffff;
+            border-color: var(--border-color);
+            color: var(--text-dark);
+        }
+
+        .btn-outline:hover {
+            background: #f8fafc;
+            border-color: var(--primary);
+        }
+
+        .chips-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .chip-btn {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: #475569;
+            cursor: pointer;
+        }
+
+        .chip-btn:hover {
+            background: #eff6ff;
+            border-color: var(--primary);
+            color: var(--primary);
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-
-    <!-- Hero Header -->
-    <header class="hero">
-        <div class="badge-tag">⚡ AI Agent Development Suite</div>
-        <h1>Hotel Agent Backend & Tool Suite</h1>
-        <p>A hands-on reference architecture demonstrating how Autonomous LLM Agents connect to Laravel backends using structured Tool Calling (Function Calling).</p>
+    <!-- 1. Top ERP Royal Blue Navbar -->
+    <header class="top-navbar">
+        <div class="nav-left">
+            <a href="/" class="logo-box">
+                <div class="logo-icon">P</div>
+                <span>LogisticsERP</span>
+            </a>
+            <nav class="nav-links">
+                <button class="nav-link-btn active" onclick="switchEntity('shipments')">Shipments</button>
+                <button class="nav-link-btn" onclick="switchEntity('orders')">Orders</button>
+                <button class="nav-link-btn" onclick="switchEntity('deliveries')">Deliveries</button>
+                <button class="nav-link-btn" onclick="switchEntity('vehicles')">Vehicles</button>
+                <button class="nav-link-btn" onclick="switchEntity('drivers')">Drivers</button>
+                <button class="nav-link-btn" onclick="switchEntity('warehouses')">Warehouses</button>
+                <button class="nav-link-btn" onclick="switchEntity('customers')">Customers</button>
+                <button class="nav-link-btn" onclick="switchEntity('routes')">Routes</button>
+                <button class="nav-link-btn" onclick="switchEntity('companies')">Companies</button>
+                <button class="nav-link-btn" onclick="switchEntity('users')">Users</button>
+                <a href="/openapi.json" target="_blank" class="nav-link-btn">OpenAPI Spec</a>
+            </nav>
+        </div>
+        <div class="nav-right">
+            <div class="db-status-pill">
+                <span class="status-dot"></span>
+                <span>Neon PostgreSQL (Live DB)</span>
+            </div>
+            <div class="user-pill">
+                <span>Admin</span>
+                <span style="font-size: 14px; line-height: 1;">&bull;&bull;&bull;</span>
+            </div>
+        </div>
     </header>
 
-    <!-- 4 Tools Summary Cards -->
-    <div class="tools-grid">
-        <div class="tool-pill">
-            <span class="icon">🔍</span>
-            <h3>check_availability <span class="tool-method">POST</span></h3>
-            <p>Inspects live room inventory, capacity, amenities, and dynamic nightly rates for any given date.</p>
-        </div>
-        <div class="tool-pill">
-            <span class="icon">✍️</span>
-            <h3>create_booking <span class="tool-method">POST</span></h3>
-            <p>Autonomous reservation maker with conflict detection, validation, and confirmation generation.</p>
-        </div>
-        <div class="tool-pill">
-            <span class="icon">📋</span>
-            <h3>get_booking_details <span class="tool-method">POST</span></h3>
-            <p>Flexible multi-field lookup query tool to find reservations by ID or customer email address.</p>
-        </div>
-        <div class="tool-pill">
-            <span class="icon">❌</span>
-            <h3>cancel_booking <span class="tool-method">POST</span></h3>
-            <p>Lifecycle state manager that handles cancellation reasoning and automated refund execution.</p>
-        </div>
-    </div>
+    <!-- 2. Main ERP Frame Layout -->
+    <div class="erp-layout">
 
-    <!-- Main Section: Chat Simulator + Tool Runner -->
-    <div class="grid-2">
-
-        <!-- 1. AI Agent Reasoning & Chat Simulator -->
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">
-                    <span>🤖</span>
-                    <span>AI Agent Chat Simulator</span>
-                </div>
-                <span style="font-size: 0.78rem; color: var(--accent-emerald); font-weight: 600;">● Online</span>
+        <!-- 2.1 Left Dark Sidebar (Consignment & Job Inspector) -->
+        <aside class="left-sidebar">
+            <div class="sidebar-title">Job Inspector</div>
+            
+            <div class="search-row">
+                <input type="text" id="jobSearchCode" class="sidebar-input" value="SHP-ORD-DFW-2601" placeholder="Tracking / Shipment Code...">
+                <button class="btn-proceed" onclick="inspectJobCode()">Proceed / Lookup</button>
             </div>
 
-            <div class="chat-container">
-                <div class="chat-messages" id="chatMessages">
-                    <div class="chat-msg agent">
-                        <div class="bubble">
-                            👋 Hello! I am the Hotel AI Concierge Agent. I can check room availability, make reservations, search your bookings, or process cancellations. Try prompting me below!
-                        </div>
-                    </div>
+            <!-- Live Database Consignment Metadata -->
+            <div class="sidebar-card">
+                <div class="meta-row">
+                    <span class="meta-label">Consignment</span>
+                    <span class="meta-val mono" id="sideShpNumber" style="color:#38bdf8;">SHP-ORD-DFW-2601</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Tracking Code</span>
+                    <span class="meta-val mono" id="sideTracking">TRK-9832-7491-01</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Order #</span>
+                    <span class="meta-val" id="sideOrder">ORD-2026-1001</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Customer</span>
+                    <span class="meta-val" id="sideCustomer">Tesla Gigafactory</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Status</span>
+                    <span class="meta-val" id="sideStatus"><span class="badge badge-in_transit">in_transit</span></span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Carrier</span>
+                    <span class="meta-val" id="sideCarrier">Dedicated Fleet</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Temp Controlled</span>
+                    <span class="meta-val" id="sideTemp">Standard (Ambient)</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Total Value</span>
+                    <span class="meta-val mono" id="sideAmount" style="color:#4ade80;">$184,500.00</span>
+                </div>
+            </div>
+
+            <!-- Quick Database Summary in Sidebar -->
+            <div class="sidebar-card">
+                <div style="font-size:11px; font-weight:700; color:#94a3b8; margin-bottom:4px;">NEON DB TELEMATICS</div>
+                <div class="meta-row">
+                    <span class="meta-label">Total Shipments</span>
+                    <span class="meta-val mono" id="sideTotalShipments">55</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Active Orders</span>
+                    <span class="meta-val mono" id="sideTotalOrders">55</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Fleet Vehicles</span>
+                    <span class="meta-val mono" id="sideTotalVehicles">52</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Active CDL Drivers</span>
+                    <span class="meta-val mono" id="sideTotalDrivers">52</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Distribution Hubs</span>
+                    <span class="meta-val mono" id="sideTotalWarehouses">52</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 2.2 Right Main Content -->
+        <main class="main-content">
+
+            <!-- 1. Real-time Database KPI Metrics Grid -->
+            <section class="metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-title">Gross Revenue</span>
+                    <div class="metric-value mono" id="kpiRevenue" style="color:var(--primary);">$0.00</div>
+                    <span class="metric-subtitle" id="kpiOrdersCount">Live from Orders table</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-title">Active Freight Loads</span>
+                    <div class="metric-value" id="kpiActiveShipments" style="color:var(--emerald);">0 Active</div>
+                    <span class="metric-subtitle" id="kpiOnTime">On-Time Delivery Rate: 98.5%</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-title">Fleet Utilization</span>
+                    <div class="metric-value" id="kpiFleetUtil" style="color:var(--cyan);">0.0%</div>
+                    <span class="metric-subtitle" id="kpiVehiclesCount">Live from Vehicles table</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-title">Warehouse Capacity</span>
+                    <div class="metric-value" id="kpiWarehouseUtil" style="color:#8b5cf6;">0.0%</div>
+                    <span class="metric-subtitle" id="kpiHubsCount">Live from Warehouses table</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-title">Driver Safety Score</span>
+                    <div class="metric-value" id="kpiDriverScore" style="color:var(--emerald);">98.8 / 100</div>
+                    <span class="metric-subtitle" id="kpiDriversCount">Live from Drivers table</span>
+                </div>
+            </section>
+
+            <!-- 2. Entity Tabs Bar -->
+            <div class="entity-tabs-bar">
+                <div class="tab-buttons" id="tabButtons">
+                    <button class="entity-tab active" onclick="switchEntity('shipments')">Shipments</button>
+                    <button class="entity-tab" onclick="switchEntity('orders')">Orders</button>
+                    <button class="entity-tab" onclick="switchEntity('deliveries')">Deliveries</button>
+                    <button class="entity-tab" onclick="switchEntity('vehicles')">Vehicles</button>
+                    <button class="entity-tab" onclick="switchEntity('drivers')">Drivers</button>
+                    <button class="entity-tab" onclick="switchEntity('warehouses')">Warehouses</button>
+                    <button class="entity-tab" onclick="switchEntity('customers')">Customers</button>
+                    <button class="entity-tab" onclick="switchEntity('routes')">Routes</button>
+                    <button class="entity-tab" onclick="switchEntity('companies')">Companies</button>
+                    <button class="entity-tab" onclick="switchEntity('users')">Users</button>
+                </div>
+                <button class="btn btn-outline" style="font-size:11.5px; padding:4px 10px;" onclick="loadEntityData(currentEntity)">
+                    🔄 Refresh Data
+                </button>
+            </div>
+
+            <!-- 3. Dynamic Database Records Table -->
+            <div class="table-card">
+                <div class="table-toolbar">
+                    <input type="text" id="tableFilter" class="search-input" placeholder="Search records in real-time..." oninput="filterCurrentTable()">
+                    <span id="recordsCount" class="badge-count mono">Loading records...</span>
                 </div>
 
-                <div class="prompt-chips">
-                    <span class="chip" onclick="setPrompt('Is the deluxe room available on 2026-09-01?')">🔍 Check Deluxe</span>
-                    <span class="chip" onclick="setPrompt('Book an executive suite on 2026-11-15 for Alex Morgan')">✍️ Book Suite</span>
-                    <span class="chip" onclick="setPrompt('Lookup reservation details for alice@example.com')">📋 Lookup Booking</span>
-                    <span class="chip" onclick="setPrompt('Cancel booking #1')">❌ Cancel #1</span>
+                <div class="table-wrap">
+                    <table id="mainDataTable">
+                        <thead id="mainTableHead">
+                            <tr><th>Loading columns...</th></tr>
+                        </thead>
+                        <tbody id="mainTableBody">
+                            <tr><td>Fetching database rows from Neon PostgreSQL...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 4. Autonomous CEO Agent AI Reasoning Console -->
+            <div class="ceo-card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-size:13px; font-weight:700; color:var(--primary); display:flex; align-items:center; gap:6px;">
+                        <span>🤖</span> Autonomous Logistics CEO Agent (Reasoning Console)
+                    </div>
+                    <span class="mono" style="font-size:11px; color:var(--text-muted);">POST /api/agent/chat &bull; Connected to Neon DB</span>
+                </div>
+
+                <div id="ceoLogs" class="terminal-box">
+                    <div style="color: #38bdf8;">[SYSTEM] Connected to Neon PostgreSQL Database (ep-dry-star-ayj98cwp.c-5.us-east-2.aws.neon.tech).</div>
+                    <div style="color: #a7f3d0;">[CEO AGENT READY] Executive intelligence engine standing by. Query any live logistics telematics, order pipelines, or dispatch operations.</div>
                 </div>
 
                 <div class="chat-input-row">
-                    <input type="text" id="agentInput" placeholder="Ask the agent anything (e.g. check availability, book room...)" onkeydown="if(event.key==='Enter') sendAgentMessage()">
-                    <button class="btn" id="sendBtn" onclick="sendAgentMessage()">Send</button>
+                    <input type="text" id="ceoChatInput" class="chat-input" placeholder="Ask CEO Agent a question about shipments, fleet, warehouses, or risk exceptions..." onkeydown="if(event.key==='Enter') sendCeoChat()">
+                    <button class="btn btn-primary" onclick="sendCeoChat()">Ask CEO Agent</button>
+                </div>
+
+                <div class="chips-row">
+                    <button class="chip-btn" onclick="promptChip('Give me an executive briefing on today operations')">📊 Executive Briefing</button>
+                    <button class="chip-btn" onclick="promptChip('Where is shipment TRK-9832-7491-01 right now?')">📍 Track Consignment</button>
+                    <button class="chip-btn" onclick="promptChip('What is our fleet status and in-transit trucks?')">🚛 Fleet Telematics</button>
+                    <button class="chip-btn" onclick="promptChip('Inspect warehouse capacity bottlenecks across all hubs')">🏬 Warehouse Capacity</button>
+                    <button class="chip-btn" onclick="promptChip('Flag critical operational exceptions and delayed loads')">⚠️ Risk Exceptions</button>
+                    <button class="chip-btn" onclick="promptChip('What are customer credit balances and receivables?')">💰 Customer Receivables</button>
                 </div>
             </div>
-        </div>
 
-        <!-- 2. Interactive Tool Runner -->
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">
-                    <span>🛠️</span>
-                    <span>Direct Tool Execution Hub</span>
-                </div>
-                <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.75rem;" onclick="copySchema()">📋 Copy Schema</button>
-            </div>
-
-            <div class="tabs-nav">
-                <button class="tab-btn active" onclick="switchToolTab('check')">check_availability</button>
-                <button class="tab-btn" onclick="switchToolTab('book')">create_booking</button>
-                <button class="tab-btn" onclick="switchToolTab('details')">get_booking_details</button>
-                <button class="tab-btn" onclick="switchToolTab('cancel')">cancel_booking</button>
-            </div>
-
-            <!-- Tab 1: Check Availability Form -->
-            <div id="tab-check" class="tool-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Date (YYYY-MM-DD)</label>
-                        <input type="date" id="checkDate" class="form-control" value="2026-09-01">
-                    </div>
-                    <div class="form-group">
-                        <label>Room Category (Optional)</label>
-                        <select id="checkRoom" class="form-control">
-                            <option value="">All Categories</option>
-                            <option value="standard">Standard Queen ($99)</option>
-                            <option value="deluxe">Deluxe King ($150)</option>
-                            <option value="suite">Executive Suite ($250)</option>
-                            <option value="penthouse">Presidential Penthouse ($500)</option>
-                        </select>
-                    </div>
-                </div>
-                <button class="btn" onclick="runCheckAvailability()">Execute check_availability</button>
-            </div>
-
-            <!-- Tab 2: Create Booking Form -->
-            <div id="tab-book" class="tool-form" style="display: none;">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Guest Name</label>
-                        <input type="text" id="bookName" class="form-control" value="Sophia Taylor">
-                    </div>
-                    <div class="form-group">
-                        <label>Guest Email</label>
-                        <input type="email" id="bookEmail" class="form-control" value="sophia@example.com">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Date</label>
-                        <input type="date" id="bookDate" class="form-control" value="2026-10-10">
-                    </div>
-                    <div class="form-group">
-                        <label>Room Category</label>
-                        <select id="bookRoom" class="form-control">
-                            <option value="standard">Standard Queen ($99)</option>
-                            <option value="deluxe">Deluxe King ($150)</option>
-                            <option value="suite">Executive Suite ($250)</option>
-                            <option value="penthouse">Presidential Penthouse ($500)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Special Requests</label>
-                    <input type="text" id="bookRequests" class="form-control" value="Quiet room with lake view">
-                </div>
-                <button class="btn" onclick="runCreateBooking()">Execute create_booking</button>
-            </div>
-
-            <!-- Tab 3: Get Booking Details Form -->
-            <div id="tab-details" class="tool-form" style="display: none;">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Booking ID</label>
-                        <input type="number" id="searchId" class="form-control" placeholder="e.g. 1">
-                    </div>
-                    <div class="form-group">
-                        <label>Or Customer Email</label>
-                        <input type="email" id="searchEmail" class="form-control" placeholder="alice@example.com">
-                    </div>
-                </div>
-                <button class="btn" onclick="runGetBookingDetails()">Execute get_booking_details</button>
-            </div>
-
-            <!-- Tab 4: Cancel Booking Form -->
-            <div id="tab-cancel" class="tool-form" style="display: none;">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Booking ID to Cancel</label>
-                        <input type="number" id="cancelId" class="form-control" value="1">
-                    </div>
-                    <div class="form-group">
-                        <label>Cancellation Reason</label>
-                        <input type="text" id="cancelReason" class="form-control" value="Travel schedule changed">
-                    </div>
-                </div>
-                <button class="btn" style="background: linear-gradient(135deg, #f43f5e, #e11d48);" onclick="runCancelBooking()">Execute cancel_booking</button>
-            </div>
-
-            <!-- Output Box -->
-            <pre class="json-box" id="toolOutput">// Raw Tool Execution JSON response will display here...</pre>
-        </div>
+        </main>
 
     </div>
 
-    <!-- Live Database Records Inspector -->
-    <div class="panel">
-        <div class="panel-header">
-            <div class="panel-title">
-                <span>🗄️</span>
-                <span>Live Database Records (SQLite)</span>
-            </div>
-            <button class="btn btn-outline" style="padding: 6px 14px; font-size: 0.8rem;" onclick="loadLiveBookings()">🔄 Refresh Table</button>
-        </div>
+    <!-- Live Database Fetching JavaScript -->
+    <script>
+        let currentEntity = 'shipments';
+        let cachedRows = [];
 
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Guest Name</th>
-                        <th>Guest Email</th>
-                        <th>Room</th>
-                        <th>Date</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                        <th>Special Requests</th>
-                    </tr>
-                </thead>
-                <tbody id="bookingsTableBody">
-                    <tr>
-                        <td colspan="8" style="text-align: center; color: var(--text-muted);">Loading live database records...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchLiveKpis();
+            loadEntityData('shipments');
+        });
 
-    <footer class="footer">
-        Built for <strong>AI Agent Development</strong> in Laravel • <a href="/openapi.json" target="_blank">📋 openapi.json (Copilot Agent)</a> • <a href="/api/agent/tools" target="_blank">⚡ /api/agent/tools</a> • <a href="/api/agent/live-bookings" target="_blank">🗄️ /api/agent/live-bookings</a>
-    </footer>
+        // 1. Fetch Real-time KPIs from Neon Database
+        async function fetchLiveKpis() {
+            try {
+                const res = await fetch('/api/agent/ceo-kpis');
+                const json = await res.json();
+                if (json.success && json.kpis) {
+                    const k = json.kpis;
+                    document.getElementById('kpiRevenue').textContent = '$' + Number(k.revenue.total_gross_usd || 0).toLocaleString();
+                    document.getElementById('kpiOrdersCount').textContent = `${k.revenue.total_orders || 0} Total Orders in DB`;
+                    document.getElementById('kpiActiveShipments').textContent = `${k.freight_operations.active_shipments || 0} Active`;
+                    document.getElementById('kpiOnTime').textContent = `On-Time Delivery Rate: ${k.freight_operations.on_time_delivery_pct || 98.5}%`;
+                    document.getElementById('kpiFleetUtil').textContent = `${k.fleet_telematics.fleet_utilization_pct || 0}%`;
+                    document.getElementById('kpiVehiclesCount').textContent = `${k.fleet_telematics.total_vehicles || 0} Total Fleet Vehicles`;
+                    document.getElementById('kpiWarehouseUtil').textContent = `${k.network_infrastructure.avg_utilization_pct || 0}%`;
+                    document.getElementById('kpiHubsCount').textContent = `${k.network_infrastructure.total_warehouses || 0} Distribution Hubs`;
+                    document.getElementById('kpiDriverScore').textContent = `${k.fleet_telematics.avg_safety_score || 98.8} / 100`;
+                    document.getElementById('kpiDriversCount').textContent = `${k.fleet_telematics.total_drivers || 0} CDL-A Drivers`;
 
-</div>
-
-<script>
-    // Tab switching
-    function switchToolTab(tab) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.tool-form').forEach(f => f.style.display = 'none');
-
-        if (tab === 'check') {
-            document.querySelectorAll('.tab-btn')[0].classList.add('active');
-            document.getElementById('tab-check').style.display = 'flex';
-        } else if (tab === 'book') {
-            document.querySelectorAll('.tab-btn')[1].classList.add('active');
-            document.getElementById('tab-book').style.display = 'flex';
-        } else if (tab === 'details') {
-            document.querySelectorAll('.tab-btn')[2].classList.add('active');
-            document.getElementById('tab-details').style.display = 'flex';
-        } else if (tab === 'cancel') {
-            document.querySelectorAll('.tab-btn')[3].classList.add('active');
-            document.getElementById('tab-cancel').style.display = 'flex';
+                    document.getElementById('sideTotalShipments').textContent = k.freight_operations.active_shipments + k.freight_operations.delivered_shipments;
+                    document.getElementById('sideTotalOrders').textContent = k.revenue.total_orders;
+                    document.getElementById('sideTotalVehicles').textContent = k.fleet_telematics.total_vehicles;
+                    document.getElementById('sideTotalDrivers').textContent = k.fleet_telematics.total_drivers;
+                    document.getElementById('sideTotalWarehouses').textContent = k.network_infrastructure.total_warehouses;
+                }
+            } catch (err) {
+                console.error('Failed to load KPIs:', err);
+            }
         }
-    }
 
-    function setPrompt(text) {
-        document.getElementById('agentInput').value = text;
-        document.getElementById('agentInput').focus();
-    }
-
-    // Chat Simulator
-    async function sendAgentMessage() {
-        const input = document.getElementById('agentInput');
-        const text = input.value.trim();
-        if (!text) return;
-
-        const chatBox = document.getElementById('chatMessages');
-
-        // Append user message
-        const userDiv = document.createElement('div');
-        userDiv.className = 'chat-msg user';
-        userDiv.innerHTML = `<div class="bubble">${escapeHtml(text)}</div>`;
-        chatBox.appendChild(userDiv);
-        input.value = '';
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        // Add loading placeholder
-        const agentDiv = document.createElement('div');
-        agentDiv.className = 'chat-msg agent';
-        agentDiv.innerHTML = `<div class="bubble"><span style="color: var(--text-muted)">Thinking & reasoning...</span></div>`;
-        chatBox.appendChild(agentDiv);
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        try {
-            const res = await fetch('/api/agent/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({ message: text })
+        // 2. Switch Entity Table
+        function switchEntity(entityName) {
+            currentEntity = entityName;
+            document.querySelectorAll('.entity-tab').forEach(b => {
+                b.classList.toggle('active', b.textContent.toLowerCase() === entityName.toLowerCase());
             });
-            const data = await res.json();
-
-            // Format Agent Thought + Tool Info + Reply
-            agentDiv.innerHTML = `
-                <div class="agent-thought-box">
-                    <strong>🧠 Reasoning:</strong> ${escapeHtml(data.agent_reasoning.thought)}
-                </div>
-                <div class="tool-badge">
-                    ⚡ Tool Called: ${data.agent_reasoning.selected_tool}
-                </div>
-                <div class="bubble">
-                    ${escapeHtml(data.agent_response)}
-                </div>
-            `;
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            // Refresh table automatically
-            loadLiveBookings();
-        } catch (err) {
-            agentDiv.innerHTML = `<div class="bubble" style="color: #fb7185">Error connecting to agent backend: ${err.message}</div>`;
-        }
-    }
-
-    // Tool 1: Check Availability
-    async function runCheckAvailability() {
-        const date = document.getElementById('checkDate').value;
-        const room_type = document.getElementById('checkRoom').value;
-        const payload = { date };
-        if (room_type) payload.room_type = room_type;
-
-        executeDirectTool('/api/agent/check-availability', payload);
-    }
-
-    // Tool 2: Create Booking
-    async function runCreateBooking() {
-        const payload = {
-            customer_name: document.getElementById('bookName').value,
-            customer_email: document.getElementById('bookEmail').value,
-            date: document.getElementById('bookDate').value,
-            room_type: document.getElementById('bookRoom').value,
-            special_requests: document.getElementById('bookRequests').value,
-        };
-        executeDirectTool('/api/agent/create-booking', payload);
-    }
-
-    // Tool 3: Get Booking Details
-    async function runGetBookingDetails() {
-        const booking_id = document.getElementById('searchId').value;
-        const customer_email = document.getElementById('searchEmail').value;
-        const payload = {};
-        if (booking_id) payload.booking_id = parseInt(booking_id);
-        if (customer_email) payload.customer_email = customer_email;
-
-        executeDirectTool('/api/agent/get-booking-details', payload);
-    }
-
-    // Tool 4: Cancel Booking
-    async function runCancelBooking() {
-        const booking_id = parseInt(document.getElementById('cancelId').value);
-        const reason = document.getElementById('cancelReason').value;
-        const payload = { booking_id, reason };
-
-        executeDirectTool('/api/agent/cancel-booking', payload);
-    }
-
-    async function executeDirectTool(url, payload) {
-        const out = document.getElementById('toolOutput');
-        out.textContent = '// Sending request to ' + url + '...';
-
-        try {
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify(payload)
+            document.querySelectorAll('.nav-link-btn').forEach(b => {
+                b.classList.toggle('active', b.textContent.toLowerCase() === entityName.toLowerCase());
             });
-            const data = await res.json();
-            out.textContent = JSON.stringify(data, null, 2);
-            loadLiveBookings();
-        } catch (e) {
-            out.textContent = '// Error: ' + e.message;
+            loadEntityData(entityName);
         }
-    }
 
-    // Load Live DB Bookings
-    async function loadLiveBookings() {
-        const tbody = document.getElementById('bookingsTableBody');
-        try {
-            const res = await fetch('/api/agent/live-bookings');
-            const data = await res.json();
+        // 3. Load Entity Data from Neon Database API
+        async function loadEntityData(entityName) {
+            const head = document.getElementById('mainTableHead');
+            const body = document.getElementById('mainTableBody');
+            const countLabel = document.getElementById('recordsCount');
 
-            if (!data.bookings || data.bookings.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">No bookings found in database.</td></tr>`;
+            body.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:18px; color:var(--text-muted);">Fetching live records from /api/' + entityName + '...</td></tr>';
+
+            try {
+                const res = await fetch('/api/' + entityName + '?per_page=100');
+                const json = await res.json();
+                cachedRows = json.data || [];
+                countLabel.textContent = `${cachedRows.length} database records loaded`;
+
+                renderEntityTable(entityName, cachedRows);
+
+                // Auto populate sidebar with first record if shipments
+                if (entityName === 'shipments' && cachedRows.length > 0) {
+                    populateSidebarRecord(cachedRows[0]);
+                }
+            } catch (err) {
+                body.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--rose); padding:18px;">Error connecting to Neon PostgreSQL.</td></tr>';
+            }
+        }
+
+        // 4. Render Table by Entity Columns
+        function renderEntityTable(entityName, rows) {
+            const head = document.getElementById('mainTableHead');
+            const body = document.getElementById('mainTableBody');
+
+            if (!rows.length) {
+                body.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:18px; color:var(--text-muted);">No records found in database table.</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = data.bookings.map(b => `
-                <tr>
-                    <td style="font-weight: 700; font-family: 'Fira Code', monospace; color: #a5b4fc;">#${b.id}</td>
-                    <td style="font-weight: 600; color: #ffffff;">${escapeHtml(b.customer_name)}</td>
-                    <td>${escapeHtml(b.customer_email)}</td>
-                    <td><span style="text-transform: capitalize; font-weight: 500;">${escapeHtml(b.room_type)}</span></td>
-                    <td style="font-family: 'Fira Code', monospace;">${b.date ? b.date.substring(0, 10) : '-'}</td>
-                    <td style="font-weight: 600; color: #34d399;">$${parseFloat(b.price).toFixed(2)}</td>
-                    <td>
-                        <span class="status-badge ${b.status === 'confirmed' ? 'status-confirmed' : 'status-cancelled'}">
-                            ${b.status}
-                        </span>
-                    </td>
-                    <td style="font-size: 0.8rem; color: var(--text-muted);">${escapeHtml(b.special_requests || '—')}</td>
-                </tr>
-            `).join('');
-        } catch (e) {
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #fb7185;">Failed to load live database records.</td></tr>`;
+            let headers = [];
+            let rowHtml = [];
+
+            if (entityName === 'shipments') {
+                headers = ['Shipment #', 'Tracking Number', 'Origin Hub', 'Destination Hub', 'Carrier', 'Temp Controlled', 'Status', 'Actions'];
+                rowHtml = rows.map(r => `
+                    <tr>
+                        <td><strong>${r.shipment_number}</strong></td>
+                        <td class="mono" style="color:var(--cyan); font-weight:600;">${r.tracking_number}</td>
+                        <td>${r.origin_warehouse ? r.origin_warehouse.name : 'Origin Hub'}</td>
+                        <td>${r.destination_warehouse ? r.destination_warehouse.name : 'Destination Hub'}</td>
+                        <td>${r.carrier_name}</td>
+                        <td>${r.temperature_controlled ? '<span class="badge badge-in_transit">❄️ ' + (r.target_temp_celsius || 4.0) + '°C</span>' : '<span style="color:var(--text-muted);">Ambient</span>'}</td>
+                        <td><span class="badge badge-${r.status}">${r.status}</span></td>
+                        <td><button class="btn btn-outline" style="padding:2px 8px; font-size:11px;" onclick='populateSidebarRecord(${JSON.stringify(r).replace(/'/g, "&apos;")})'>Inspect</button></td>
+                    </tr>
+                `);
+            } else if (entityName === 'orders') {
+                headers = ['Order #', 'Customer Account', 'Required Date', 'Items', 'Total Amount', 'Priority', 'Payment', 'Status'];
+                rowHtml = rows.map(r => `
+                    <tr>
+                        <td><strong>${r.order_number}</strong></td>
+                        <td>${r.customer ? r.customer.name : 'Commercial Account'}</td>
+                        <td>${r.required_delivery_date || r.order_date}</td>
+                        <td>${r.items_count} units</td>
+                        <td class="mono" style="font-weight:600; color:#0f172a;">$${Number(r.total_amount).toLocaleString()}</td>
+                        <td><span class="badge ${r.priority === 'critical' ? 'badge-critical' : 'badge-in_transit'}">${r.priority}</span></td>
+                        <td><span class="badge badge-${r.payment_status}">${r.payment_status}</span></td>
+                        <td><span class="badge badge-${r.status}">${r.status}</span></td>
+                    </tr>
+                `);
+            } else if (entityName === 'deliveries') {
+                headers = ['Delivery #', 'Recipient / Dock', 'Address / City', 'Driver', 'Vehicle', 'Status', 'Feedback'];
+                rowHtml = rows.map(r => `
+                    <tr>
+                        <td><strong>${r.delivery_number}</strong></td>
+                        <td>${r.recipient_name}</td>
+                        <td>${r.delivery_address}</td>
+                        <td>${r.driver ? r.driver.first_name + ' ' + r.driver.last_name : 'Assigned Driver'}</td>
+                        <td>${r.vehicle ? r.vehicle.vehicle_code : 'Fleet Asset'}</td>
+                        <td><span class="badge badge-${r.status}">${r.status}</span></td>
+                        <td>${r.customer_feedback_rating ? '⭐ ' + r.customer_feedback_rating + '/5' : '<span style="color:var(--text-muted);">Pending POD</span>'}</td>
+                    </tr>
+                `);
+            } else if (entityName === 'vehicles') {
+                headers = ['Vehicle Code', 'Make & Model', 'Plate #', 'Type', 'Max Payload', 'Fuel Level', 'Status'];
+                rowHtml = rows.map(r => `
+                    <tr>
+                        <td><strong>${r.vehicle_code}</strong></td>
+                        <td>${r.make} ${r.model} (${r.year})</td>
+                        <td class="mono">${r.plate_number}</td>
+                        <td>${r.type}</td>
+                        <td>${Number(r.max_weight_kg).toLocaleString()} kg</td>
+                        <td><strong style="color: ${r.fuel_level_pct < 25 ? 'var(--rose)' : 'var(--emerald)'};">${r.fuel_level_pct}%</strong></td>
+                        <td><span class="badge badge-${r.status}">${r.status}</span></td>
+                    </tr>
+                `);
+            } else if (entityName === 'drivers') {
+                headers = ['Driver Code', 'Name', 'License Type', 'Phone', 'Safety Score', 'Total Trips', 'Status'];
+                rowHtml = rows.map(r => `
+                    <tr>
+                        <td><strong>${r.driver_code}</strong></td>
+                        <td>${r.first_name} ${r.last_name}</td>
+                        <td>${r.license_type}</td>
+                        <td class="mono">${r.phone}</td>
+                        <td><strong style="color:var(--emerald);">${r.safety_score} / 100</strong></td>
+                        <td>${r.total_trips} trips</td>
+                        <td><span class="badge badge-${r.status}">${r.status}</span></td>
+                    </tr>
+                `);
+            } else if (entityName === 'warehouses') {
+                headers = ['Code', 'Name', 'City & State', 'Capacity', 'Utilization', 'Type', 'Manager'];
+                rowHtml = rows.map(r => `
+                    <tr>
+                        <td><strong>${r.code}</strong></td>
+                        <td>${r.name}</td>
+                        <td>${r.city}, ${r.state || ''}</td>
+                        <td>${Number(r.capacity_sqft).toLocaleString()} sqft</td>
+                        <td><strong style="color: ${r.current_utilization_pct > 80 ? 'var(--rose)' : 'var(--emerald)'};">${r.current_utilization_pct}%</strong></td>
+                        <td><span class="badge badge-in_transit">${r.type}</span></td>
+                        <td>${r.manager_name || 'Operations Lead'}</td>
+                    </tr>
+                `);
+            } else if (entityName === 'customers') {
+                headers = ['Customer Code', 'Commercial Enterprise', 'Contact Email', 'Phone', 'Credit Facility', 'Outstanding Balance', 'Tier'];
+                rowHtml = rows.map(r => `
+                    <tr>
+                        <td><strong>${r.customer_code}</strong></td>
+                        <td>${r.name}</td>
+                        <td class="mono">${r.email}</td>
+                        <td class="mono">${r.phone}</td>
+                        <td class="mono">$${Number(r.credit_limit).toLocaleString()}</td>
+                        <td class="mono" style="color:var(--amber); font-weight:600;">$${Number(r.outstanding_balance).toLocaleString()}</td>
+                        <td><span class="badge badge-in_transit">${r.tier}</span></td>
+                    </tr>
+                `);
+            } else if (entityName === 'routes') {
+                headers = ['Route Code', 'Corridor Name', 'Origin Hub', 'Destination Hub', 'Distance', 'Est Duration', 'Risk Level'];
+                rowHtml = rows.map(r => `
+                    <tr>
+                        <td><strong>${r.route_code}</strong></td>
+                        <td>${r.name}</td>
+                        <td>${r.origin_name}</td>
+                        <td>${r.destination_name}</td>
+                        <td class="mono">${Number(r.distance_km).toLocaleString()} km</td>
+                        <td>${Math.round(r.estimated_duration_minutes / 60)} hrs</td>
+                        <td><span class="badge ${r.risk_level === 'high' ? 'badge-critical' : 'badge-in_transit'}">${r.risk_level}</span></td>
+                    </tr>
+                `);
+            } else if (entityName === 'companies') {
+                headers = ['Company Code', 'Name', 'Headquarters Address', 'Fleet Size', 'CEO', 'Status'];
+                rowHtml = rows.map(r => `
+                    <tr>
+                        <td><strong>${r.code}</strong></td>
+                        <td>${r.name}</td>
+                        <td>${r.headquarters_address || 'USA'}</td>
+                        <td>${r.fleet_size} vehicles</td>
+                        <td>${r.ceo_name || 'Leadership'}</td>
+                        <td><span class="badge badge-completed">${r.status}</span></td>
+                    </tr>
+                `);
+            } else if (entityName === 'users') {
+                headers = ['User ID', 'Name', 'Email Address', 'Role', 'Phone', 'Status'];
+                rowHtml = rows.map(r => `
+                    <tr>
+                        <td class="mono">#${r.id}</td>
+                        <td><strong>${r.name}</strong></td>
+                        <td class="mono">${r.email}</td>
+                        <td><span class="badge badge-in_transit">${r.role}</span></td>
+                        <td class="mono">${r.phone || 'N/A'}</td>
+                        <td><span class="badge badge-completed">${r.status}</span></td>
+                    </tr>
+                `);
+            }
+
+            head.innerHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+            body.innerHTML = rowHtml.join('');
         }
-    }
 
-    // Copy Tools Schema
-    async function copySchema() {
-        try {
-            const res = await fetch('/api/agent/tools');
-            const data = await res.json();
-            await navigator.clipboard.writeText(JSON.stringify(data.tools, null, 2));
-            alert('OpenAI Function Calling Tool Schemas copied to clipboard!');
-        } catch (e) {
-            alert('Error copying schema: ' + e.message);
+        // 5. Filter Current Table on Input
+        function filterCurrentTable() {
+            const query = document.getElementById('tableFilter').value.toLowerCase();
+            const filtered = cachedRows.filter(r => JSON.stringify(r).toLowerCase().includes(query));
+            renderEntityTable(currentEntity, filtered);
         }
-    }
 
-    function escapeHtml(str) {
-        if (!str) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-    }
+        // 6. Populate Left Sidebar with Real Database Record
+        function populateSidebarRecord(rec) {
+            if (!rec) return;
+            document.getElementById('jobSearchCode').value = rec.tracking_number || rec.shipment_number || rec.order_number || '';
+            document.getElementById('sideShpNumber').textContent = rec.shipment_number || 'N/A';
+            document.getElementById('sideTracking').textContent = rec.tracking_number || 'N/A';
+            document.getElementById('sideOrder').textContent = rec.order ? rec.order.order_number : (rec.order_number || 'N/A');
+            document.getElementById('sideCustomer').textContent = rec.order && rec.order.customer ? rec.order.customer.name : (rec.customer ? rec.customer.name : 'Enterprise Client');
+            document.getElementById('sideStatus').innerHTML = `<span class="badge badge-${rec.status}">${rec.status}</span>`;
+            document.getElementById('sideCarrier').textContent = rec.carrier_name || 'Dedicated Fleet';
+            document.getElementById('sideTemp').textContent = rec.temperature_controlled ? `❄️ Controlled (${rec.target_temp_celsius || 4.0}°C)` : 'Standard (Ambient)';
+            
+            const amt = rec.order ? rec.order.total_amount : (rec.total_amount || 0);
+            document.getElementById('sideAmount').textContent = '$' + Number(amt).toLocaleString();
+        }
 
-    // Initial Load
-    loadLiveBookings();
-</script>
+        // 7. Lookup by Code in Search Input
+        async function inspectJobCode() {
+            const code = document.getElementById('jobSearchCode').value.trim();
+            if (!code) return;
 
+            try {
+                const res = await fetch(`/api/agent/track?query_code=${encodeURIComponent(code)}`);
+                const json = await res.json();
+                if (json.success && json.data) {
+                    populateSidebarRecord(json.data);
+                    alert(`Record loaded from Neon DB for ${code}`);
+                } else {
+                    alert(`No active consignment found for code: ${code}`);
+                }
+            } catch (err) {
+                alert('Failed to lookup record.');
+            }
+        }
+
+        // 8. CEO AI Reasoning Chat
+        async function sendCeoChat() {
+            const input = document.getElementById('ceoChatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            input.value = '';
+            const logs = document.getElementById('ceoLogs');
+
+            const userMsg = document.createElement('div');
+            userMsg.style.color = '#38bdf8';
+            userMsg.textContent = `> EXECUTIVE PROMPT: ${text}`;
+            logs.appendChild(userMsg);
+
+            const waitMsg = document.createElement('div');
+            waitMsg.style.color = '#f59e0b';
+            waitMsg.textContent = `[CEO AGENT] Analyzing intent & executing Neon PostgreSQL query...`;
+            logs.appendChild(waitMsg);
+            logs.scrollTop = logs.scrollHeight;
+
+            try {
+                const res = await fetch('/api/agent/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const json = await res.json();
+                waitMsg.remove();
+
+                const agentMsg = document.createElement('div');
+                agentMsg.style.color = '#a7f3d0';
+                agentMsg.innerHTML = `<strong>[TITAN CEO AGENT]</strong> ${json.executive_briefing}<br><span style="color:#94a3b8; font-size:10.5px;">Executed Tool: ${json.reasoning_flow?.tool_called || 'get_executive_kpis'}</span>`;
+                logs.appendChild(agentMsg);
+            } catch (err) {
+                waitMsg.style.color = '#ef4444';
+                waitMsg.textContent = `[ERROR] Failed to query CEO Agent API.`;
+            }
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function promptChip(text) {
+            document.getElementById('ceoChatInput').value = text;
+            sendCeoChat();
+        }
+    </script>
 </body>
 </html>
