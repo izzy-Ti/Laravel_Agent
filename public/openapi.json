@@ -1,13 +1,9 @@
 {
-  "openapi": "3.0.3",
+  "openapi": "3.1.0",
   "info": {
-    "title": "Hotel Concierge AI Agent API",
-    "description": "OpenAPI specification for Microsoft Copilot, GitHub Copilot Extensions, Custom GPTs, and autonomous agent frameworks to interact with hotel booking tools.",
-    "version": "1.0.0",
-    "contact": {
-      "name": "AI Agent Developer Team",
-      "email": "support@example.com"
-    }
+    "title": "Logistics CEO Agent - Enterprise Source of Truth API",
+    "version": "2.0.0",
+    "description": "The definitive operational source of truth and autonomous tool-calling REST API for the Logistics Chief Executive Officer (CEO) Agent. Powers all 10 core logistics entities: Users, Companies, Drivers, Vehicles, Orders, Shipments, Deliveries, Routes, Warehouses, and Customers."
   },
   "servers": [
     {
@@ -15,308 +11,128 @@
       "description": "Local Development Server"
     }
   ],
+  "tags": [
+    { "name": "Agent Tools", "description": "CEO Agent AI Tool Calling & Executive Analytics" },
+    { "name": "Companies", "description": "Enterprise Logistics Tenant Organizations" },
+    { "name": "Users", "description": "Logistics Personnel, Dispatchers & Drivers" },
+    { "name": "Customers", "description": "B2B and B2C Commercial Accounts" },
+    { "name": "Warehouses", "description": "Fulfillment Centers, Depots & Cold Storage Hubs" },
+    { "name": "Drivers", "description": "Commercial Fleet Drivers & Telematics" },
+    { "name": "Vehicles", "description": "Fleet Assets, Heavy Trucks, Reefers & Electric Vans" },
+    { "name": "Orders", "description": "Commercial Freight Orders & Billing" },
+    { "name": "Routes", "description": "Freight Corridors, Tolls, Waypoints & Risk Profiles" },
+    { "name": "Shipments", "description": "Line-Haul Consignments, Tracking & Temperature Logs" },
+    { "name": "Deliveries", "description": "Final-Mile Fulfillment, POD & Signature Capture" }
+  ],
   "paths": {
-    "/api/agent/check-availability": {
-      "post": {
-        "summary": "Check Room Availability",
-        "description": "Inspects room inventory, capacity, amenities, and dynamic nightly rates for a given date and optional room category.",
-        "operationId": "checkAvailability",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["date"],
-                "properties": {
-                  "date": {
-                    "type": "string",
-                    "format": "date",
-                    "example": "2026-09-01",
-                    "description": "The reservation date in YYYY-MM-DD format."
-                  },
-                  "room_type": {
-                    "type": "string",
-                    "enum": ["standard", "deluxe", "suite", "penthouse"],
-                    "example": "deluxe",
-                    "description": "Optional specific room category to check."
-                  }
-                }
-              }
-            }
-          }
-        },
+    "/api/agent/ceo-kpis": {
+      "get": {
+        "tags": ["Agent Tools"],
+        "summary": "Get CEO Executive Operations KPI Briefing",
+        "description": "Returns gross revenue, active shipments, fleet utilization rate, on-time delivery percentage, driver safety metrics, and warehouse capacity utilization.",
         "responses": {
-          "200": {
-            "description": "Availability details successfully retrieved",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "tool": { "type": "string", "example": "check_availability" },
-                    "success": { "type": "boolean", "example": true },
-                    "date": { "type": "string", "example": "2026-09-01" },
-                    "room_type": { "type": "string", "example": "deluxe" },
-                    "available": { "type": "boolean", "example": true },
-                    "details": {
-                      "type": "object",
-                      "properties": {
-                        "name": { "type": "string", "example": "Deluxe King Room" },
-                        "price": { "type": "number", "example": 150.0 },
-                        "capacity": { "type": "integer", "example": 2 },
-                        "amenities": {
-                          "type": "array",
-                          "items": { "type": "string" },
-                          "example": ["King Bed", "City View", "Free Wi-Fi"]
-                        }
-                      }
-                    },
-                    "message": { "type": "string", "example": "Deluxe King Room is available on 2026-09-01 at $150/night." }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/agent/create-booking": {
-      "post": {
-        "summary": "Create Room Reservation",
-        "description": "Reserves a room for a guest on a specific date, performs double-booking validation, and issues a confirmation code.",
-        "operationId": "createBooking",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["customer_name", "customer_email", "room_type", "date"],
-                "properties": {
-                  "customer_name": {
-                    "type": "string",
-                    "example": "Sophia Taylor",
-                    "description": "Full name of the guest."
-                  },
-                  "customer_email": {
-                    "type": "string",
-                    "format": "email",
-                    "example": "sophia@example.com",
-                    "description": "Email address of the guest."
-                  },
-                  "room_type": {
-                    "type": "string",
-                    "enum": ["standard", "deluxe", "suite", "penthouse"],
-                    "example": "suite",
-                    "description": "Chosen room category."
-                  },
-                  "date": {
-                    "type": "string",
-                    "format": "date",
-                    "example": "2026-10-15",
-                    "description": "Reservation date in YYYY-MM-DD format."
-                  },
-                  "special_requests": {
-                    "type": "string",
-                    "example": "High floor, quiet corner",
-                    "description": "Optional preferences or notes."
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Reservation successfully confirmed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "tool": { "type": "string", "example": "create_booking" },
-                    "success": { "type": "boolean", "example": true },
-                    "booking_id": { "type": "integer", "example": 7 },
-                    "confirmation_code": { "type": "string", "example": "RES-00007" },
-                    "message": { "type": "string", "example": "Reservation #7 confirmed for Sophia Taylor on 2026-10-15." }
-                  }
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Booking conflict (room already booked)"
-          }
-        }
-      }
-    },
-    "/api/agent/get-booking-details": {
-      "post": {
-        "summary": "Lookup Booking Details",
-        "description": "Retrieves active or past reservation records by numeric Booking ID or customer email.",
-        "operationId": "getBookingDetails",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "booking_id": {
-                    "type": "integer",
-                    "example": 1,
-                    "description": "The unique booking ID."
-                  },
-                  "customer_email": {
-                    "type": "string",
-                    "format": "email",
-                    "example": "alice@example.com",
-                    "description": "Email address associated with the booking."
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Booking records found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "tool": { "type": "string", "example": "get_booking_details" },
-                    "success": { "type": "boolean", "example": true },
-                    "found": { "type": "boolean", "example": true },
-                    "count": { "type": "integer", "example": 1 },
-                    "bookings": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": { "type": "integer", "example": 1 },
-                          "customer_name": { "type": "string", "example": "Alice Johnson" },
-                          "customer_email": { "type": "string", "example": "alice@example.com" },
-                          "room_type": { "type": "string", "example": "deluxe" },
-                          "date": { "type": "string", "example": "2026-09-01" },
-                          "price": { "type": "string", "example": "150.00" },
-                          "status": { "type": "string", "example": "confirmed" },
-                          "special_requests": { "type": "string", "example": "High floor" }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "No reservations found"
-          }
-        }
-      }
-    },
-    "/api/agent/cancel-booking": {
-      "post": {
-        "summary": "Cancel Booking",
-        "description": "Cancels an active reservation, updates status to cancelled, and initiates refund processing.",
-        "operationId": "cancelBooking",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["booking_id"],
-                "properties": {
-                  "booking_id": {
-                    "type": "integer",
-                    "example": 1,
-                    "description": "The ID of the booking to cancel."
-                  },
-                  "reason": {
-                    "type": "string",
-                    "example": "Change of travel plans",
-                    "description": "Optional cancellation reason."
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Booking successfully cancelled",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "tool": { "type": "string", "example": "cancel_booking" },
-                    "success": { "type": "boolean", "example": true },
-                    "booking_id": { "type": "integer", "example": 1 },
-                    "status": { "type": "string", "example": "cancelled" },
-                    "refund_status": { "type": "string", "example": "Full refund of $150.00 initiated." },
-                    "message": { "type": "string", "example": "Booking #1 was successfully cancelled." }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Booking not found"
-          }
+          "200": { "description": "Executive KPI overview" }
         }
       }
     },
     "/api/agent/tools": {
       "get": {
-        "summary": "Get Tool Schema Catalog",
-        "description": "Returns raw OpenAI/Gemini/Anthropic compatible JSON schema function definitions.",
-        "operationId": "getToolsSchema",
+        "tags": ["Agent Tools"],
+        "summary": "Get OpenAI / Claude / Gemini Function Calling Tools Schema",
+        "description": "Returns standard function declarations formatted for AI agents and LLM tool dispatchers.",
         "responses": {
-          "200": {
-            "description": "Tool schema catalog"
-          }
+          "200": { "description": "AI Tool schema dictionary" }
         }
       }
     },
     "/api/agent/execute": {
       "post": {
-        "summary": "Universal Tool Dispatcher",
-        "description": "Executes any registered agent tool dynamically by name with provided arguments.",
-        "operationId": "executeTool",
+        "tags": ["Agent Tools"],
+        "summary": "Universal AI Tool Dispatcher",
+        "description": "Executes any registered agent tool dynamically by name with provided parameters.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["tool"],
                 "properties": {
-                  "tool": {
-                    "type": "string",
-                    "example": "check_availability",
-                    "description": "Name of the tool to execute."
-                  },
-                  "arguments": {
-                    "type": "object",
-                    "example": { "date": "2026-09-01", "room_type": "deluxe" },
-                    "description": "Arguments dictionary matching tool definition."
-                  }
-                }
+                  "tool_name": { "type": "string", "example": "get_executive_kpis" },
+                  "parameters": { "type": "object" }
+                },
+                "required": ["tool_name"]
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "Tool executed successfully"
-          }
+          "200": { "description": "Tool execution result" }
         }
       }
+    },
+    "/api/agent/chat": {
+      "post": {
+        "tags": ["Agent Tools"],
+        "summary": "Autonomous CEO Agent Reasoning & Chat Simulator",
+        "description": "Accepts natural language queries from leadership, determines the required logistics tool, executes it against Postgres/Supabase, and generates synthesized executive briefings.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string", "example": "Give me an executive briefing on today's fleet status and delayed shipments" }
+                },
+                "required": ["message"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "CEO Agent reasoning and data response" }
+        }
+      }
+    },
+    "/api/companies": {
+      "get": { "tags": ["Companies"], "summary": "List all logistics companies" },
+      "post": { "tags": ["Companies"], "summary": "Create a new logistics company" }
+    },
+    "/api/users": {
+      "get": { "tags": ["Users"], "summary": "List logistics personnel and users" },
+      "post": { "tags": ["Users"], "summary": "Create a user account" }
+    },
+    "/api/customers": {
+      "get": { "tags": ["Customers"], "summary": "List commercial customer accounts" },
+      "post": { "tags": ["Customers"], "summary": "Create a new customer account" }
+    },
+    "/api/warehouses": {
+      "get": { "tags": ["Warehouses"], "summary": "List warehouse facilities and hubs" },
+      "post": { "tags": ["Warehouses"], "summary": "Register a new warehouse hub" }
+    },
+    "/api/drivers": {
+      "get": { "tags": ["Drivers"], "summary": "List fleet drivers and live telemetry" },
+      "post": { "tags": ["Drivers"], "summary": "Onboard a new commercial driver" }
+    },
+    "/api/vehicles": {
+      "get": { "tags": ["Vehicles"], "summary": "List fleet vehicles, trucks, and telematics" },
+      "post": { "tags": ["Vehicles"], "summary": "Add a new vehicle to fleet" }
+    },
+    "/api/orders": {
+      "get": { "tags": ["Orders"], "summary": "List customer commercial orders" },
+      "post": { "tags": ["Orders"], "summary": "Create a new customer freight order" }
+    },
+    "/api/routes": {
+      "get": { "tags": ["Routes"], "summary": "List freight corridors and routes" },
+      "post": { "tags": ["Routes"], "summary": "Define a new freight route" }
+    },
+    "/api/shipments": {
+      "get": { "tags": ["Shipments"], "summary": "List active line-haul shipments" },
+      "post": { "tags": ["Shipments"], "summary": "Create and manifest a new shipment" }
+    },
+    "/api/deliveries": {
+      "get": { "tags": ["Deliveries"], "summary": "List final-mile deliveries" },
+      "post": { "tags": ["Deliveries"], "summary": "Schedule or create a delivery dispatch" }
     }
   }
 }
