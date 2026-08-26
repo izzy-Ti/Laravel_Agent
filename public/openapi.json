@@ -69,31 +69,6 @@
           "200": { "description": "Tool execution result" }
         }
       }
-    },
-    "/api/agent/chat": {
-      "post": {
-        "tags": ["Agent Tools"],
-        "summary": "Autonomous CEO Agent Reasoning & Chat Simulator",
-        "description": "Accepts natural language queries from leadership, determines the required logistics tool, executes it against Postgres/Supabase, and generates synthesized executive briefings.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": { "type": "string", "example": "Give me an executive briefing on today's fleet status and delayed shipments" }
-                },
-                "required": ["message"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": { "description": "CEO Agent reasoning and data response" }
-        }
-      }
-    },
     "/api/companies": {
       "get": { "tags": ["Companies"], "summary": "List all logistics companies" },
       "post": { "tags": ["Companies"], "summary": "Create a new logistics company" }

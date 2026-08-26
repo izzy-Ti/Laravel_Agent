@@ -89,25 +89,6 @@ class LogisticsAgentTest extends TestCase
             ]);
     }
 
-    /**
-     * Test CEO Autonomous Chat Simulator
-     */
-    public function test_ceo_agent_chat_reasoning(): void
-    {
-        $response = $this->postJson('/api/agent/chat', [
-            'message' => 'Where is shipment TRK-9832-7491-01 right now?',
-        ]);
-
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'success',
-                'agent',
-                'prompt',
-                'reasoning_flow' => ['intent_classification', 'tool_called', 'tool_parameters'],
-                'executive_briefing',
-                'raw_tool_data',
-            ]);
-    }
 
     /**
      * Test CRUD for all 10 domain resources

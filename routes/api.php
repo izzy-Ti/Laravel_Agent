@@ -57,10 +57,6 @@ Route::prefix('agent')->group(function () {
 
     // Universal Tool Dispatcher (Execute any registered tool by name)
     Route::post('/execute', [AgentToolController::class, 'executeTool']);
-
-    // CEO Agent Reasoning & Autonomous Chat Simulator
-    Route::post('/chat', [AgentToolController::class, 'simulateAgentChat']);
-    Route::post('/ask-ceo', [AgentToolController::class, 'simulateAgentChat']);
 });
 
 // =========================================================================

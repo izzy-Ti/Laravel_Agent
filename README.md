@@ -51,21 +51,20 @@ php artisan db:seed --force
 
 ---
 
-## 🤖 CEO Agent Intelligence & AI Tool Endpoints
+## 🤖 Copilot Studio & CEO Agent AI Tool Endpoints
 
 | Endpoint | Method | Purpose |
 | :--- | :--- | :--- |
 | `/api/agent/ceo-kpis` | `GET` | High-level CEO Executive metrics (Gross revenue, Active loads, OTD %, Fleet utilization, Safety) |
-| `/api/agent/tools` | `GET` | OpenAI, Claude, Gemini tool calling schema definition |
+| `/api/agent/tools` | `GET` | OpenAI, Claude, Gemini, and Microsoft Copilot Studio tool calling schema definition |
 | `/api/agent/execute` | `POST` | Universal AI tool dispatcher (Execute any tool dynamically by name) |
-| `/api/agent/chat` / `/api/agent/ask-ceo` | `POST` | Autonomous CEO Agent reasoning engine (Accepts natural language queries) |
 | `/api/agent/fleet-status` | `GET/POST` | Live GPS telematics, driver status, and low-fuel truck alerts |
 | `/api/agent/track` | `GET/POST` | Track any consignment by `tracking_number`, `shipment_number`, `order_number`, or `delivery_number` |
 | `/api/agent/warehouse-capacity` | `GET/POST` | Inspect warehouse capacity bottlenecks (>80% utilization) |
 | `/api/agent/critical-exceptions` | `GET/POST` | Audit delayed shipments, breakdown alerts, and credit risk |
 | `/api/agent/optimize-dispatch` | `POST` | Autonomously allocate optimal driver & vehicle to active shipments |
 | `/api/agent/customer-financials` | `GET/POST` | Inspect commercial accounts receivables and credit utilization |
-| `/openapi.json` | `GET` | OpenAPI 3.1 Specification for LangChain, Dify, Flowise, or Cursor |
+| `/openapi.json` | `GET` | OpenAPI 3.1 Specification for Microsoft Copilot Studio, LangChain, Dify, or Cursor |
 
 ---
 
@@ -76,7 +75,4 @@ php artisan db:seed --force
    php artisan serve
    ```
 2. Open the Executive Command Center in your browser at `http://localhost:8000`.
-3. Try asking the CEO Agent:
-   - *"Give me an executive briefing on today's operations"*
-   - *"Where is shipment TRK-9832-7491-01 right now?"*
-   - *"Inspect warehouse capacity bottlenecks across all hubs"*
+3. Connect Microsoft Copilot Studio or any AI agent to `/openapi.json` to enable autonomous tool calling against the live Neon PostgreSQL database.

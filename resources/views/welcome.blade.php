@@ -728,32 +728,40 @@
                 </div>
             </div>
 
-            <!-- 4. Autonomous CEO Agent AI Reasoning Console -->
+            <!-- 4. Copilot Studio Tool Calling & Telematics Inspector -->
             <div class="ceo-card">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div style="font-size:13px; font-weight:700; color:var(--primary); display:flex; align-items:center; gap:6px;">
-                        <span>🤖</span> Autonomous Logistics CEO Agent (Reasoning Console)
+                        <span>⚡</span> Microsoft Copilot Studio & AI Tool Execution Console
                     </div>
-                    <span class="mono" style="font-size:11px; color:var(--text-muted);">POST /api/agent/chat &bull; Connected to Neon DB</span>
+                    <span class="mono" style="font-size:11px; color:var(--text-muted);">POST /api/agent/execute &bull; Backed by Neon DB</span>
                 </div>
 
                 <div id="ceoLogs" class="terminal-box">
-                    <div style="color: #38bdf8;">[SYSTEM] Connected to Neon PostgreSQL Database (ep-dry-star-ayj98cwp.c-5.us-east-2.aws.neon.tech).</div>
-                    <div style="color: #a7f3d0;">[CEO AGENT READY] Executive intelligence engine standing by. Query any live logistics telematics, order pipelines, or dispatch operations.</div>
+                    <div style="color: #38bdf8;">[SYSTEM] Connected to Neon PostgreSQL Source of Truth (ep-dry-star-ayj98cwp.c-5.us-east-2.aws.neon.tech).</div>
+                    <div style="color: #a7f3d0;">[COPILOT STUDIO READY] Tool dispatcher online. Microsoft Copilot Studio, LangChain, or GitHub Copilot can execute any tool directly against live telemetry.</div>
                 </div>
 
                 <div class="chat-input-row">
-                    <input type="text" id="ceoChatInput" class="chat-input" placeholder="Ask CEO Agent a question about shipments, fleet, warehouses, or risk exceptions..." onkeydown="if(event.key==='Enter') sendCeoChat()">
-                    <button class="btn btn-primary" onclick="sendCeoChat()">Ask CEO Agent</button>
+                    <select id="toolSelector" class="search-input" style="width:260px;" onchange="updateToolParams()">
+                        <option value="get_executive_kpis">get_executive_kpis</option>
+                        <option value="query_fleet_status">query_fleet_status</option>
+                        <option value="track_shipment_or_delivery">track_shipment_or_delivery</option>
+                        <option value="inspect_warehouse_capacity">inspect_warehouse_capacity</option>
+                        <option value="flag_critical_exceptions">flag_critical_exceptions</option>
+                        <option value="get_customer_financials">get_customer_financials</option>
+                    </select>
+                    <input type="text" id="toolParamsInput" class="chat-input" placeholder='Tool arguments JSON, e.g. {"query_code":"TRK-1000-9999-01"}' value='{}'>
+                    <button class="btn btn-primary" onclick="runSelectedTool()">Execute Tool</button>
                 </div>
 
                 <div class="chips-row">
-                    <button class="chip-btn" onclick="promptChip('Give me an executive briefing on today operations')">📊 Executive Briefing</button>
-                    <button class="chip-btn" onclick="promptChip('Where is shipment TRK-9832-7491-01 right now?')">📍 Track Consignment</button>
-                    <button class="chip-btn" onclick="promptChip('What is our fleet status and in-transit trucks?')">🚛 Fleet Telematics</button>
-                    <button class="chip-btn" onclick="promptChip('Inspect warehouse capacity bottlenecks across all hubs')">🏬 Warehouse Capacity</button>
-                    <button class="chip-btn" onclick="promptChip('Flag critical operational exceptions and delayed loads')">⚠️ Risk Exceptions</button>
-                    <button class="chip-btn" onclick="promptChip('What are customer credit balances and receivables?')">💰 Customer Receivables</button>
+                    <button class="chip-btn" onclick="quickTool('get_executive_kpis', {})">📊 Executive KPIs</button>
+                    <button class="chip-btn" onclick="quickTool('query_fleet_status', {status: 'in_transit'})">🚛 In-Transit Fleet</button>
+                    <button class="chip-btn" onclick="quickTool('track_shipment_or_delivery', {query_code: 'TRK-1000-9999-01'})">📍 Track Consignment</button>
+                    <button class="chip-btn" onclick="quickTool('inspect_warehouse_capacity', {threshold_pct: 80})">🏬 Warehouse Bottlenecks</button>
+                    <button class="chip-btn" onclick="quickTool('flag_critical_exceptions', {})">⚠️ Critical Exceptions</button>
+                    <button class="chip-btn" onclick="quickTool('get_customer_financials', {})">💰 Customer Receivables</button>
                 </div>
             </div>
 
@@ -1028,49 +1036,75 @@
             }
         }
 
-        // 8. CEO AI Reasoning Chat
-        async function sendCeoChat() {
-            const input = document.getElementById('ceoChatInput');
-            const text = input.value.trim();
-            if (!text) return;
+        // 8. Execute Tool via /api/agent/execute (Copilot Studio Dispatcher)
+        function updateToolParams() {
+            const tool = document.getElementById('toolSelector').value;
+            const input = document.getElementById('toolParamsInput');
+            if (tool === 'track_shipment_or_delivery') {
+                input.value = '{"query_code": "TRK-1000-9999-01"}';
+            } else if (tool === 'query_fleet_status') {
+                input.value = '{"status": "in_transit"}';
+            } else if (tool === 'inspect_warehouse_capacity') {
+                input.value = '{"threshold_pct": 80}';
+            } else {
+                input.value = '{}';
+            }
+        }
 
-            input.value = '';
+        async function runSelectedTool() {
+            const tool = document.getElementById('toolSelector').value;
+            const paramText = document.getElementById('toolParamsInput').value.trim();
+            let params = {};
+            try {
+                params = paramText ? JSON.parse(paramText) : {};
+            } catch (e) {
+                alert('Invalid JSON in tool parameters input');
+                return;
+            }
+            await executeAgentTool(tool, params);
+        }
+
+        function quickTool(toolName, params) {
+            document.getElementById('toolSelector').value = toolName;
+            document.getElementById('toolParamsInput').value = JSON.stringify(params);
+            executeAgentTool(toolName, params);
+        }
+
+        async function executeAgentTool(toolName, params) {
             const logs = document.getElementById('ceoLogs');
 
             const userMsg = document.createElement('div');
             userMsg.style.color = '#38bdf8';
-            userMsg.textContent = `> EXECUTIVE PROMPT: ${text}`;
+            userMsg.textContent = `> COPILOT EXECUTE: ${toolName}(${JSON.stringify(params)})`;
             logs.appendChild(userMsg);
 
             const waitMsg = document.createElement('div');
             waitMsg.style.color = '#f59e0b';
-            waitMsg.textContent = `[CEO AGENT] Analyzing intent & executing Neon PostgreSQL query...`;
+            waitMsg.textContent = `[AGENT DISPATCHER] Executing tool against Neon PostgreSQL...`;
             logs.appendChild(waitMsg);
             logs.scrollTop = logs.scrollHeight;
 
             try {
-                const res = await fetch('/api/agent/chat', {
+                const res = await fetch('/api/agent/execute', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text })
+                    body: JSON.stringify({
+                        tool_name: toolName,
+                        parameters: params
+                    })
                 });
                 const json = await res.json();
                 waitMsg.remove();
 
                 const agentMsg = document.createElement('div');
                 agentMsg.style.color = '#a7f3d0';
-                agentMsg.innerHTML = `<strong>[TITAN CEO AGENT]</strong> ${json.executive_briefing}<br><span style="color:#94a3b8; font-size:10.5px;">Executed Tool: ${json.reasoning_flow?.tool_called || 'get_executive_kpis'}</span>`;
+                agentMsg.innerHTML = `<strong>[TOOL RESULT: 200 OK]</strong><pre style="margin-top:4px; color:#f1f5f9; background:#1e293b; padding:6px; border-radius:4px; overflow-x:auto;">${JSON.stringify(json, null, 2)}</pre>`;
                 logs.appendChild(agentMsg);
             } catch (err) {
                 waitMsg.style.color = '#ef4444';
-                waitMsg.textContent = `[ERROR] Failed to query CEO Agent API.`;
+                waitMsg.textContent = `[ERROR] Failed to execute tool: ${err.message}`;
             }
             logs.scrollTop = logs.scrollHeight;
-        }
-
-        function promptChip(text) {
-            document.getElementById('ceoChatInput').value = text;
-            sendCeoChat();
         }
     </script>
 </body>
